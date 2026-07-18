@@ -1,5 +1,6 @@
 ﻿using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
 using OrcamentoSaaS.Shared.Dtos.Fornecedores;
+using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Fornecedores.Create;
 
@@ -16,7 +17,8 @@ public class FornecedorCreateHandler(AppDbContext db)
             
         var documento = resultado.Value;
             
-        var existe = await db.Fornecedores.AnyAsync(f => f.Documento == documento, cancellationToken: ct);
+        var existe = await db.Fornecedores.AsNoTracking().AnyAsync(f => 
+            f.Documento == documento, cancellationToken: ct);
             
         if (existe)
             return Result<FornecedorResponse>.Fail("Já existe Fornecedor cadastrado com esse CPF/CNPJ");

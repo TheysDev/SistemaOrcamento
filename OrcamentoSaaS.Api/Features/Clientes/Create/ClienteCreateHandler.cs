@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrcamentoSaaS.Api.Features.Clientes.Shared;
+﻿using OrcamentoSaaS.Api.Features.Clientes.Shared;
 using OrcamentoSaaS.Shared.Dtos.Clientes;
+using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Clientes.Create;
 
@@ -17,7 +17,7 @@ public class ClienteCreateHandler(AppDbContext db)
             
         var documento = resultado.Value;
             
-        var existe = await db.Clientes.AnyAsync(f => 
+        var existe = await db.Clientes.AsNoTracking().AnyAsync(f => 
                 f.Documento == documento, cancellationToken: ct);
             
         if (existe)

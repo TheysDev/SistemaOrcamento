@@ -1,6 +1,6 @@
 ﻿using CpfCnpjLibrary;
 using OrcamentoSaaS.Shared.Extensions;
-using OrcamentoSaaS.Shared.Result;
+using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Shared.ValueObjects;
 

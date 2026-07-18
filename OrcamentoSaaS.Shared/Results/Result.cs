@@ -1,4 +1,4 @@
-﻿namespace OrcamentoSaaS.Shared.Result;
+﻿namespace OrcamentoSaaS.Shared.Results;
 
 public class Result
 { 

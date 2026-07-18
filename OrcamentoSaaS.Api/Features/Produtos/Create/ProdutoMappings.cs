@@ -4,17 +4,13 @@ namespace OrcamentoSaaS.Api.Features.Produtos.Create;
 
 public static class ProdutoMappings
 {
-    public static Produto ToEntity(this ProdutoCreateCommand cmd)
+    public static Produto ToEntity(this ProdutoCreateCommand cmd, ProdutoDetalhes detalhes)
     {
         return new Produto(
-            cmd.TenantId, 
-            cmd.Codigo, 
+            cmd.TenantId,
+            cmd.Codigo,
             cmd.Descricao,
             cmd.Valor,
-            new ProdutoDetalhes(
-                cmd.Detalhes.Comprimento,
-                cmd.Detalhes.Peso,
-                cmd.Detalhes.Diametro,
-                cmd.Detalhes.Volume));
+            detalhes);
     }
 }

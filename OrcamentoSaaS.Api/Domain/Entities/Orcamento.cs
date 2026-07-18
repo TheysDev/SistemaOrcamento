@@ -1,4 +1,6 @@
-﻿namespace OrcamentoSaaS.Api.Domain.Entities;
+﻿using OrcamentoSaaS.Shared.Results;
+
+namespace OrcamentoSaaS.Api.Domain.Entities;
 
 public class Orcamento
 {
@@ -22,11 +24,10 @@ public class Orcamento
     public StatusOrcamento Status { get; private set; }
     public bool IsActive { get; private set; }
     
-    
     protected Orcamento()
     {}
 
-    public Orcamento(Guid tenantId, Guid clienteId, Guid fornecedorId, DateOnly validade, int parcelas)
+    private Orcamento(Guid tenantId, Guid clienteId, Guid fornecedorId, DateOnly validade, int parcelas)
     {
         TenantId = tenantId;
         ClienteId = clienteId;
@@ -42,7 +43,7 @@ public class Orcamento
         Guid clienteId, 
         Guid fornecedorId, 
         DateOnly validade, 
-        List<ItemOrcamento> itens, 
+        ICollection<ItemOrcamento> itens, 
         int parcelas)
     {
         var existeItens = itens.Count != 0;

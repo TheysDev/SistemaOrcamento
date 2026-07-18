@@ -1,4 +1,6 @@
-﻿namespace OrcamentoSaaS.Api.Domain.Entities;
+﻿using OrcamentoSaaS.Shared.Results;
+
+namespace OrcamentoSaaS.Api.Domain.Entities;
 
 public class Fornecedor
 {
