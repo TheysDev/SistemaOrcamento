@@ -8,31 +8,33 @@ public class Pedido
     public Guid TenantId { get; private set; }
     public DateOnly Data { get; private set; }
     public StatusPedido Status { get; private set; }
+    public int Codigo { get; private set; }
+    public decimal ValorTotal { get; private set; }
     
     public Guid OrcamentoId { get; private set; }
     public Orcamento Orcamento { get; private set; } = null!;
 
     private readonly List<Parcela> _parcelas = [];
     public IReadOnlyList<Parcela> Parcelas => _parcelas.AsReadOnly();
-    
-    public decimal ValorTotal => _parcelas.Sum(p => p.Valor);
-    
+   
     public bool IsActive { get; private set; }
     
     protected Pedido()
     {}
 
-    private Pedido(Guid tenantId, Guid orcamentoId)
+    private Pedido(Guid tenantId, Guid orcamentoId, int codigo)
     {
         TenantId = tenantId;
         OrcamentoId = orcamentoId;
+        Codigo = codigo;
         Data = DateOnly.FromDateTime(DateTime.UtcNow);
         Status = StatusPedido.Aberto;
     }
 
-    public static Result<Pedido> Criar(Guid tenantId, Guid orcamentoId, int numeroParcelas, decimal valor)
+    public static Result<Pedido> Criar(Guid tenantId, Guid orcamentoId, 
+        int numeroParcelas, decimal valor, int codigo)
     {
-        var pedido = new Pedido(tenantId, orcamentoId);
+        var pedido = new Pedido(tenantId, orcamentoId, codigo);
         
         var valorParcela = Math.Round(valor / numeroParcelas, 2);
         
@@ -50,6 +52,8 @@ public class Pedido
             
             restante -= valorAtual;
         }
+        
+        pedido.ValorTotal = pedido._parcelas.Sum(p => p.Valor);
         
         return Result<Pedido>.Success(pedido);
     }

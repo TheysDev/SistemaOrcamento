@@ -16,7 +16,7 @@ public class ItemOrcamento
     public int Quantidade { get; private set; }
     public decimal Valor { get; private set; }
     public decimal Desconto { get; private set; }
-    public decimal Total => Quantidade * Valor - Desconto;
+    public decimal Total => (Quantidade * Valor) - Desconto;
     public bool IsActive { get; private set; }
 
 

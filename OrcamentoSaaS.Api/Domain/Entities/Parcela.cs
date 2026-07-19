@@ -28,6 +28,6 @@ public class Parcela
     
     public void PagarParcela()
     {
-        DataPagamento = DateOnly.FromDateTime(DateTime.UtcNow);;
+        DataPagamento = DateOnly.FromDateTime(DateTime.Now);;
     }
 }
