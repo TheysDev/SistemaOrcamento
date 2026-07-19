@@ -1,6 +1,7 @@
-﻿using OrcamentoSaaS.Shared.Dtos.Orcamentos;
+﻿using OrcamentoSaaS.Api.Features.Orcamentos.Create;
+using OrcamentoSaaS.Shared.Dtos.Orcamentos;
 
-namespace OrcamentoSaaS.Api.Features.Orcamento.Create;
+namespace OrcamentoSaaS.Api.Features.Orcamentos.Create;
 
 public static class OrcamentoCreateEndPoint
 {
@@ -16,6 +17,7 @@ public static class OrcamentoCreateEndPoint
                 tenantProvider.TenantId,
                 req.ClienteId,
                 req.FornecedorId,
+                req.Validade,
                 req.NumeroParcelas,
                 req.Itens);
             

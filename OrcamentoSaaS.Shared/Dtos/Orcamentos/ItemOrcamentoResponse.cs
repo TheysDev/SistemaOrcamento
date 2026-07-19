@@ -8,4 +8,4 @@ public record ItemOrcamentoResponse(
     int Quantidade,
     decimal Valor,
     decimal Desconto,
-    decimal ValorTotal);
+    decimal Total);

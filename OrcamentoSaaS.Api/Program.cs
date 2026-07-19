@@ -2,6 +2,7 @@ using OrcamentoSaaS.Api.Features.Clientes.Create;
 using OrcamentoSaaS.Api.Features.Clientes.Shared;
 using OrcamentoSaaS.Api.Features.Fornecedores.Create;
 using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
+using OrcamentoSaaS.Api.Features.Orcamentos.Shared;
 using OrcamentoSaaS.Api.Features.Produtos.Create;
 using OrcamentoSaaS.Api.Features.Produtos.Shared;
 
@@ -24,7 +25,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITenantProvider, TenantProvider>();
 
 //DI Create
-builder.AddCliente().AddFornecedor().AddProduto();
+builder.AddCliente().AddFornecedor().AddProduto().AddOrcamento();
 
 var app = builder.Build();
 

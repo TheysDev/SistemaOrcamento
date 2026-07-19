@@ -34,7 +34,7 @@ public class ItemOrcamento
         IsActive = true;
     }
     
-    public static Result<ItemOrcamento> Criar(Guid tenantId ,Guid produtoId, 
+    public static Result<ItemOrcamento> Criar(Guid tenantId, Guid produtoId, 
         int quantidade, decimal valor, decimal desconto)
     {
         if (produtoId == Guid.Empty)

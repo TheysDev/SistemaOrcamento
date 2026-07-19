@@ -11,6 +11,10 @@ public record OrcamentoRequest(
 
     [Range(1, 36, ErrorMessage = "Número de parcelas não pode ser 0 ou maior que 36.")]
     int NumeroParcelas,
+    
+    [Required]
+    [ValidadeDate (ErrorMessage = "A data de validade deve ser pelo menos 7 dias no futuro.")]
+    DateOnly Validade,
 
     [MinLength(1, ErrorMessage = "O orçamento deve possuir ao menos um item.")]
     ICollection<ItemOrcamentoRequest> Itens

@@ -51,7 +51,7 @@ public class Orcamento
         if (!existeItens)
             return Result<Orcamento>.Fail("O Orcamento deve ter ao menos um item.");
 
-        var vencimento = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7));
+        var vencimento = DateOnly.FromDateTime(DateTime.Now.AddDays(7));
 
         if (validade < vencimento)
             return Result<Orcamento>.Fail("A validade deve ser de uma semana ou mais");
