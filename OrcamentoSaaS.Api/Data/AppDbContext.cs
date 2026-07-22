@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantProvide
     public DbSet<ItemOrcamento> ItemOrcamentos { get; set; }
     public DbSet<Pedido> Pedidos { get; set; }
     public DbSet<Parcela> Parcelas { get; set; }
+    public DbSet<ControleCodigos> ControleDeCodigos { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

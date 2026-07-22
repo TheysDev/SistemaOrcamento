@@ -27,11 +27,12 @@ public class Orcamento
     protected Orcamento()
     {}
 
-    private Orcamento(Guid tenantId, Guid clienteId, Guid fornecedorId, DateOnly validade, int parcelas)
+    private Orcamento(Guid tenantId, Guid clienteId, Guid fornecedorId, int codigo, DateOnly validade, int parcelas)
     {
         TenantId = tenantId;
         ClienteId = clienteId;
         FornecedorId = fornecedorId;
+        Codigo = codigo;
         Validade = validade;
         NumeroParcelas = parcelas;
         Status = StatusOrcamento.Rascunho;
@@ -41,7 +42,8 @@ public class Orcamento
     public static Result<Orcamento> Criar(
         Guid tenantId, 
         Guid clienteId, 
-        Guid fornecedorId, 
+        Guid fornecedorId,
+        int codigo,
         DateOnly validade, 
         ICollection<ItemOrcamento> itens, 
         int parcelas)
@@ -56,7 +58,7 @@ public class Orcamento
         if (validade < vencimento)
             return Result<Orcamento>.Fail("A validade deve ser de uma semana ou mais");
         
-        var orcamento = new Orcamento(tenantId, clienteId, fornecedorId, validade, parcelas);
+        var orcamento = new Orcamento(tenantId, clienteId, fornecedorId, codigo, validade, parcelas);
 
         foreach (var item in itens)
         {

@@ -5,12 +5,13 @@ namespace OrcamentoSaaS.Api.Features.Orcamentos.Create;
 
 public static class OrcamentoMappings
 {
-    public static Result<Orcamento> ToEntity(this OrcamentoCommand cmd, ICollection<ItemOrcamento> itens)
+    public static Result<Orcamento> ToEntity(this OrcamentoCommand cmd, ICollection<ItemOrcamento> itens, int codigo)
     {
         return Orcamento.Criar(
             cmd.TenantId,
             cmd.ClienteId,
             cmd.FornecedorId,
+            codigo,
             cmd.Validade,
             itens,
             cmd.NumeroParcelas);

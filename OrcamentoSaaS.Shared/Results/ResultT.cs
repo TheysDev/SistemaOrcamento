@@ -1,6 +1,6 @@
 ﻿namespace OrcamentoSaaS.Shared.Results;
 
-public class Result<T> : Results.Result
+public class Result<T> : Result
 {
     public T Value { get; }
     

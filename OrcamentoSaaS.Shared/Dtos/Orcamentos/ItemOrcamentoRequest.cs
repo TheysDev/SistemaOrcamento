@@ -10,6 +10,5 @@ public sealed record ItemOrcamentoRequest(
         ErrorMessage = "A quantidade deve ser maior que 0.")]
     int Quantidade,
     
-    [Range(typeof(decimal), "0", "100000",
-        ErrorMessage = "O desconto não pode ser negativo.")]
+    [NotDescontoMenorZero(ErrorMessage = "O desconto não pode ser negativo.")]
     decimal Desconto);

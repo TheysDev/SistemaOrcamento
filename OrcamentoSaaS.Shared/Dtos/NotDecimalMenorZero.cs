@@ -2,14 +2,13 @@
 
 namespace OrcamentoSaaS.Shared.Dtos;
 
-public class NotEmptyGuidAttribute : ValidationAttribute
+public class NotDecimalMenorZero : ValidationAttribute
 {
     public override bool IsValid(object? value)
     {
         if (value is null)
             return true;
         
-        return value is Guid guid && guid != Guid.Empty;
+        return value is decimal and > 0;
     }
-    
 }
