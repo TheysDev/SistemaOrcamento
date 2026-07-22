@@ -1,4 +1,5 @@
-﻿using OrcamentoSaaS.Shared.Dtos.Clientes;
+﻿using Microsoft.AspNetCore.Mvc;
+using OrcamentoSaaS.Shared.Dtos.Clientes;
 
 namespace OrcamentoSaaS.Api.Features.Clientes.Create;
 
@@ -7,9 +8,9 @@ public static class ClienteCreateEndPoint
     public static void CreateClienteRoute(this WebApplication app)
     {
         app.MapPost("/cliente/cadastrar", async (
-            ClienteCreateRequest req, 
-            ITenantProvider tenantProvider,
-            ClienteCreateHandler handler,
+            [FromBody]ClienteCreateRequest req, 
+            [FromServices]ITenantProvider tenantProvider,
+            [FromServices]ClienteCreateHandler handler,
             CancellationToken ct) =>
         {
             var command = new ClienteCreateCommand(

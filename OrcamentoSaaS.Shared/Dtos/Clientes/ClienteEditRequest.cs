@@ -2,7 +2,7 @@
 
 namespace OrcamentoSaaS.Shared.Dtos.Clientes;
 
-public sealed record ClienteCreateRequest(
+public sealed record ClienteEditRequest(
     [Required(ErrorMessage = "O nome é obrigatório.")]
     string Nome, 
     [Required(ErrorMessage = "A cidade é obrigatória.")]
@@ -13,6 +13,4 @@ public sealed record ClienteCreateRequest(
     [Required(ErrorMessage = "O e-mail é obrigatório.")]
     [EmailAddress(ErrorMessage = "Formato de e-mail inválido.")]
     string Email, 
-    string? Telefone, 
-    [Required(ErrorMessage = "O CPF/CNPJ é obrigatório.")]
-    string Documento);
+    string? Telefone);
