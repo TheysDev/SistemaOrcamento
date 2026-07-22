@@ -1,13 +1,12 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
-using OrcamentoSaaS.Api.Features.Clientes.Create;
-using OrcamentoSaaS.Api.Features.Clientes.Edit;
+using OrcamentoSaaS.Api.Features.Clientes;
 using OrcamentoSaaS.Api.Features.Clientes.Shared;
-using OrcamentoSaaS.Api.Features.Fornecedores.Create;
+using OrcamentoSaaS.Api.Features.Fornecedores;
 using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
-using OrcamentoSaaS.Api.Features.Orcamentos.Create;
+using OrcamentoSaaS.Api.Features.Orcamentos;
 using OrcamentoSaaS.Api.Features.Orcamentos.Shared;
-using OrcamentoSaaS.Api.Features.Produtos.Create;
+using OrcamentoSaaS.Api.Features.Produtos;
 using OrcamentoSaaS.Api.Features.Produtos.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,14 +41,12 @@ app.UseAuthorization();
 app.MapIdentityApi<AppUser>();
 
 //EndPoints
-//Create
-app.ProdutoCreateRoute();
-app.CreateClienteRoute();
-app.FornecedorCreateRoute();
-app.OrcamentoCreateRoute();
+var api = app.MapGroup("/api");
 
-//Edit
-app.EditClienteRoute();
+api.MapCliente().MapFornecedor().MapOrcamento().MapProduto();
+
+
+
 
 var culture = new CultureInfo("pt-BR");
 

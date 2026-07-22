@@ -1,14 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrcamentoSaaS.Api.Features.Clientes.Shared;
+﻿using OrcamentoSaaS.Api.Features.Clientes.Shared;
 using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
 using OrcamentoSaaS.Api.Features.Orcamentos.Shared;
 using OrcamentoSaaS.Api.Features.Produtos.Shared;
 using OrcamentoSaaS.Shared.Dtos.Orcamentos;
 using OrcamentoSaaS.Shared.Results;
 
-namespace OrcamentoSaaS.Api.Features.Orcamentos.Create;
+namespace OrcamentoSaaS.Api.Features.Orcamentos.Commands;
 
-public class OrcamentoCreateHandler(AppDbContext db)
+public class CreateHandler(AppDbContext db)
 {
     public async Task<Result<OrcamentoResponse>> Handle(
             OrcamentoCommand cmd, 

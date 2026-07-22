@@ -1,10 +1,11 @@
-﻿using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
+﻿using OrcamentoSaaS.Api.Features.Fornecedores.Create;
+using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
 using OrcamentoSaaS.Shared.Dtos.Fornecedores;
 using OrcamentoSaaS.Shared.Results;
 
-namespace OrcamentoSaaS.Api.Features.Fornecedores.Create;
+namespace OrcamentoSaaS.Api.Features.Fornecedores.Commands;
 
-public class FornecedorCreateHandler(AppDbContext db)
+public class CreateHandler(AppDbContext db)
 {
     public async Task<Result<FornecedorResponse>> Handle(
         FornecedorCreateCommand cmd, 

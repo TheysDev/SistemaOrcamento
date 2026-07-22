@@ -1,6 +1,6 @@
 ﻿using OrcamentoSaaS.Shared.Dtos.Clientes;
 
-namespace OrcamentoSaaS.Api.Features.Clientes.Create;
+namespace OrcamentoSaaS.Api.Features.Clientes.Shared;
 
 public static class ClienteMappings
 {

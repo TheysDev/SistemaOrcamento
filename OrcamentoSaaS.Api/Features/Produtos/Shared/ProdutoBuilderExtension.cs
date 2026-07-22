@@ -1,4 +1,4 @@
-﻿using OrcamentoSaaS.Api.Features.Produtos.Create;
+﻿using OrcamentoSaaS.Api.Features.Produtos.Commands;
 
 namespace OrcamentoSaaS.Api.Features.Produtos.Shared;
 

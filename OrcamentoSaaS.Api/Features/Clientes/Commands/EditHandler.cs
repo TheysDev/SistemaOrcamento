@@ -2,9 +2,9 @@
 using OrcamentoSaaS.Shared.Dtos.Clientes;
 using OrcamentoSaaS.Shared.Results;
 
-namespace OrcamentoSaaS.Api.Features.Clientes.Edit;
+namespace OrcamentoSaaS.Api.Features.Clientes.Commands;
 
-public class ClienteEditHandler(AppDbContext db)
+public class EditHandler(AppDbContext db)
 {
     public async Task<Result<ClienteResponse>> Handle(
         ClienteEditCommand cmd,

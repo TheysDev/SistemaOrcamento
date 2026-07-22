@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Clientes\Queries\" />
+    <Folder Include="Features\Fornecedores\Queries\" />
+    <Folder Include="Features\Orcamentos\Queries\" />
+    <Folder Include="Features\Produtos\Queries\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

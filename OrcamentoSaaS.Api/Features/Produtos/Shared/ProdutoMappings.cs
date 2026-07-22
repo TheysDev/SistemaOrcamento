@@ -1,6 +1,6 @@
 ﻿using OrcamentoSaaS.Shared.Dtos.Produtos;
 
-namespace OrcamentoSaaS.Api.Features.Produtos.Create;
+namespace OrcamentoSaaS.Api.Features.Produtos.Shared;
 
 public static class ProdutoMappings
 {

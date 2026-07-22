@@ -1,7 +1,7 @@
 ﻿using OrcamentoSaaS.Shared.Dtos.Orcamentos;
 using OrcamentoSaaS.Shared.Results;
 
-namespace OrcamentoSaaS.Api.Features.Orcamentos.Create;
+namespace OrcamentoSaaS.Api.Features.Orcamentos.Shared;
 
 public static class OrcamentoMappings
 {

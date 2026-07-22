@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OrcamentoSaaS.Api.Features.Produtos.Shared;
+﻿using OrcamentoSaaS.Api.Features.Produtos.Shared;
 using OrcamentoSaaS.Shared.Dtos.Produtos;
 using OrcamentoSaaS.Shared.Results;
 
-namespace OrcamentoSaaS.Api.Features.Produtos.Create;
+namespace OrcamentoSaaS.Api.Features.Produtos.Commands;
 
 public class ProdutoCreateHandler(AppDbContext db)
 {
