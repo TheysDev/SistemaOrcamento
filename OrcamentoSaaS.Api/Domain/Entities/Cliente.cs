@@ -29,7 +29,7 @@ public class Cliente
         IsActive = true;
     }
 
-    public Result Atualizar(string nome, string cidade, string email, string? telefone)
+    public Result Atualizar(string nome, string cidade, string uf, string email, string? telefone)
     {
         if (string.IsNullOrEmpty(nome))
             return Result<Cliente>.Fail("Nome é obrigatório.");
@@ -42,6 +42,7 @@ public class Cliente
         
         Nome = nome.Trim();
         Cidade = cidade.Trim();
+        Uf = uf;
         Email = email.Trim();
         if (telefone != null) Telefone = telefone.Trim();
 

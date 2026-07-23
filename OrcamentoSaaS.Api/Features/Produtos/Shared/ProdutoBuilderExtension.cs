@@ -6,7 +6,7 @@ public static class ProdutoBuilderExtension
 {
     public static WebApplicationBuilder AddProduto(this WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<ProdutoCreateHandler>();
+        builder.Services.AddScoped<CreateHandler>();
         
         return builder;
     }

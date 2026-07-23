@@ -13,7 +13,7 @@ public static class ProdutoEndPoint
         group.MapPost("/", async (
             [FromBody] ProdutoCreateRequest req,
             [FromServices] ITenantProvider tenantProvider,
-            [FromServices] ProdutoCreateHandler handler,
+            [FromServices] CreateHandler handler,
             CancellationToken ct
             ) =>
         {

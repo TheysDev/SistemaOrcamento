@@ -16,18 +16,34 @@ public class CreateHandler(AppDbContext db)
             return Result<ClienteResponse>.Fail(resultado.Error);
             
         var documento = resultado.Value;
-            
-        var existe = await db.Clientes.AsNoTracking().AnyAsync(f => 
-                f.Documento == documento, cancellationToken: ct);
-            
-        if (existe)
-            return Result<ClienteResponse>.Fail("Já existe Cliente cadastrado com esse CPF/CNPJ");
+        
+        var cliente = await db.Clientes
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(c => 
+                c.TenantId == cmd.TenantId && 
+                c.Documento == documento, cancellationToken: ct);
 
-        var cliente = cmd.ToEntity(documento);
+        if (cliente is not null)
+        {
+            if (cliente.IsActive) 
+                return Result<ClienteResponse>.Fail("Já existe Cliente cadastrado com esse CPF/CNPJ");
             
-        db.Clientes.Add(cliente);
+            cliente.Ativar();
+            cliente.Atualizar(
+                cmd.Nome,
+                cmd.Cidade,
+                cmd.Uf,
+                cmd.Email,
+                cmd.Telefone);
+        }
+        else
+        {
+            cliente = cmd.ToEntity(documento);
+            db.Clientes.Add(cliente);
+        }
+        
         await db.SaveChangesAsync(ct);
-            
+        
         return Result<ClienteResponse>.Success(cliente.ToResponse());
     }
 } 

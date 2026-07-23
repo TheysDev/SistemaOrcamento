@@ -15,7 +15,7 @@ public class EditHandler(AppDbContext db)
         if(cliente == null)
             return Result<ClienteResponse>.Fail("Cliente não encontrado!");
         
-        var result = cliente.Atualizar(cmd.Nome, cmd.Cidade, cmd.Email, cmd.Telefone);
+        var result = cliente.Atualizar(cmd.Nome, cmd.Cidade, cmd.Uf, cmd.Email, cmd.Telefone);
 
         if (result.IsFailure)
             return Result<ClienteResponse>.Fail(result.Error);
