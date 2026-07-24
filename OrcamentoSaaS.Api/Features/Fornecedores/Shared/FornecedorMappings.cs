@@ -1,7 +1,7 @@
 ﻿using OrcamentoSaaS.Shared.Dtos.Fornecedores;
 using OrcamentoSaaS.Shared.Results;
 
-namespace OrcamentoSaaS.Api.Features.Fornecedores.Create;
+namespace OrcamentoSaaS.Api.Features.Fornecedores.Shared;
 
 public static class FornecedorMappings
 {

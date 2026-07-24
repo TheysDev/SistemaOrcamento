@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using OrcamentoSaaS.Api.Features.Fornecedores.Commands;
+﻿using OrcamentoSaaS.Api.Features.Fornecedores.Commands;
 using OrcamentoSaaS.Shared.Dtos.Fornecedores;
 
 namespace OrcamentoSaaS.Api.Features.Fornecedores;
@@ -11,9 +10,9 @@ public static class FornecedorEndPoints
         var group = endpoints.MapGroup("/fornecedor");
         
         group.MapPost("/", async (
-            [FromBody] FornecedorCreateRequest req,
-            [FromServices] ITenantProvider tenantProvider,
-            [FromServices] CreateHandler handler,
+            FornecedorCreateRequest req,
+            ITenantProvider tenantProvider,
+            CreateHandler handler,
             CancellationToken ct) =>
         {
             var command = new FornecedorCreateCommand(
@@ -32,6 +31,41 @@ public static class FornecedorEndPoints
             return result.IsSuccess
                 ? Results.Created($"/{result.Value.Id}", result.Value)
                 : Results.BadRequest(new { error = result.Error });
+        });
+
+        group.MapPut("/{id:guid}", async (
+            Guid id,
+            FornecedorEditRequest req,
+            ITenantProvider tenantProvider,
+            EditHandler handler,
+            CancellationToken ct) =>
+        {
+            var command = new FornecedorEditCommand(
+                id,
+                tenantProvider.TenantId,
+                req.Nome,
+                req.Cidade,
+                req.Uf,
+                req.Email,
+                req.Telefone);
+
+            var result = await handler.Handle(command, ct);
+
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.NoContent();
+        });
+
+        group.MapDelete("/{id:guid}", async (
+            Guid id,
+            DeleteHandler handler,
+            CancellationToken ct) =>
+        {
+            var result = await handler.Handle(id, ct);
+            
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.NoContent();
         });
 
         return endpoints;

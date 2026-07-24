@@ -18,7 +18,7 @@ public class CreateHandler(AppDbContext db)
         var documento = resultado.Value;
         
         var cliente = await db.Clientes
-            .IgnoreQueryFilters()
+            .IgnoreQueryFilters(["SoftDelete"])
             .FirstOrDefaultAsync(c => 
                 c.TenantId == cmd.TenantId && 
                 c.Documento == documento, cancellationToken: ct);
@@ -29,7 +29,7 @@ public class CreateHandler(AppDbContext db)
                 return Result<ClienteResponse>.Fail("Já existe Cliente cadastrado com esse CPF/CNPJ");
             
             cliente.Ativar();
-            cliente.Atualizar(
+            cliente.EditarDados(
                 cmd.Nome,
                 cmd.Cidade,
                 cmd.Uf,

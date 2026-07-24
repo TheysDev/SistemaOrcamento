@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using OrcamentoSaaS.Api.Features.Clientes.Commands;
+﻿using OrcamentoSaaS.Api.Features.Clientes.Commands;
 using OrcamentoSaaS.Shared.Dtos.Clientes;
 
 namespace OrcamentoSaaS.Api.Features.Clientes;
@@ -11,9 +10,9 @@ public static class ClienteEndPoints
         var group = endpoints.MapGroup("/cliente");
 
         group.MapPost("/", async (
-            [FromBody] ClienteCreateRequest req,
-            [FromServices] ITenantProvider tenantProvider,
-            [FromServices] CreateHandler handler,
+            ClienteCreateRequest req,
+            ITenantProvider tenantProvider,
+            CreateHandler handler,
             CancellationToken ct) =>
         {
             var command = new ClienteCreateCommand(
@@ -33,10 +32,10 @@ public static class ClienteEndPoints
         });
 
         group.MapPut("/{id:guid}", async (
-            [FromRoute] Guid id,
-            [FromBody] ClienteEditRequest req,
-            [FromServices] ITenantProvider tenantProvider,
-            [FromServices] EditHandler handler,
+            Guid id,
+            ClienteEditRequest req,
+            ITenantProvider tenantProvider, 
+            EditHandler handler,
             CancellationToken ct
         ) =>
         {
@@ -57,7 +56,7 @@ public static class ClienteEndPoints
         });
         
         group.MapDelete("/{id:guid}", async (
-            [FromRoute] Guid id,
+            Guid id,
             DeleteHandler handler,
             CancellationToken ct) =>
         {

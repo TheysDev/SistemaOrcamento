@@ -8,9 +8,9 @@ public class DeleteHandler(AppDbContext db)
         Guid id,
         CancellationToken ct)
     {
-        var cliente = await db.Clientes.FindAsync([id], ct);
+        var cliente = await db.Clientes.FirstOrDefaultAsync(c => c.Id == id, ct);
 
-        if (cliente == null)
+        if (cliente is null)
             return Result.Fail("Cliente não encontrado");
         
         cliente.Inativar();

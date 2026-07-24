@@ -1,5 +1,4 @@
-﻿using OrcamentoSaaS.Api.Features.Fornecedores.Create;
-using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
+﻿using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
 using OrcamentoSaaS.Shared.Dtos.Fornecedores;
 using OrcamentoSaaS.Shared.Results;
 
@@ -18,23 +17,38 @@ public class CreateHandler(AppDbContext db)
             
         var documento = resultado.Value;
             
-        var existe = await db.Fornecedores.AsNoTracking().AnyAsync(f => 
-            f.Documento == documento, cancellationToken: ct);
+        var fornecedor = await db.Fornecedores
+            .IgnoreQueryFilters(["SoftDelete"])
+            .FirstOrDefaultAsync(f =>
+                f.Documento == documento, cancellationToken: ct);
+
+        if (fornecedor is not null)
+        {
+            if(fornecedor.IsActive)
+                return Result<FornecedorResponse>.Fail("Já existe Fornecedor cadastrado com esse CPF/CNPJ");
             
-        if (existe)
-            return Result<FornecedorResponse>.Fail("Já existe Fornecedor cadastrado com esse CPF/CNPJ");
+            fornecedor.Ativar();
+            fornecedor.EditarDados(
+                cmd.Nome,
+                cmd.Cidade,
+                cmd.Uf,
+                cmd.Email,
+                cmd.Telefone);
+        }
+        else
+        {
+            var result = cmd.ToEntity(documento);
         
-        var result = cmd.ToEntity(documento);
+            if (result.IsFailure)
+                return Result<FornecedorResponse>.Fail(result.Error);
         
-        if (result.IsFailure)
-            Result<FornecedorResponse>.Fail(result.Error);
-        
-        var fornecedor = result.Value;
+            fornecedor = result.Value;
             
-        db.Fornecedores.Add(fornecedor);
+            db.Fornecedores.Add(fornecedor);
+        }
         
-        await db.SaveChangesAsync(ct); 
-        
+        await db.SaveChangesAsync(ct);
+
         return Result<FornecedorResponse>.Success(fornecedor.ToResponse());
     }
 }

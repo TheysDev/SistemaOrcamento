@@ -10,12 +10,12 @@ public class EditHandler(AppDbContext db)
         ClienteEditCommand cmd,
         CancellationToken ct)
     {
-        var cliente = await db.Clientes.FindAsync([cmd.Id], cancellationToken: ct);
+        var cliente = await db.Clientes.FirstOrDefaultAsync(c => c.Id == cmd.Id, ct);
         
-        if(cliente == null)
+        if(cliente is null)
             return Result<ClienteResponse>.Fail("Cliente não encontrado!");
         
-        var result = cliente.Atualizar(cmd.Nome, cmd.Cidade, cmd.Uf, cmd.Email, cmd.Telefone);
+        var result = cliente.EditarDados(cmd.Nome, cmd.Cidade, cmd.Uf, cmd.Email, cmd.Telefone);
 
         if (result.IsFailure)
             return Result<ClienteResponse>.Fail(result.Error);

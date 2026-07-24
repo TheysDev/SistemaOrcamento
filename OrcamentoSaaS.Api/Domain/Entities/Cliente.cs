@@ -29,13 +29,16 @@ public class Cliente
         IsActive = true;
     }
 
-    public Result Atualizar(string nome, string cidade, string uf, string email, string? telefone)
+    public Result EditarDados(string nome, string cidade, string uf, string email, string? telefone)
     {
         if (string.IsNullOrEmpty(nome))
             return Result<Cliente>.Fail("Nome é obrigatório.");
        
         if (string.IsNullOrEmpty(cidade))
             return Result<Cliente>.Fail("Cidade é obrigatório.");
+        
+        if (string.IsNullOrEmpty(uf))
+            return Result<Cliente>.Fail("Uf é obrigatório.");
        
         if (string.IsNullOrEmpty(email))
             return Result<Cliente>.Fail("E-mail é obrigatório.");

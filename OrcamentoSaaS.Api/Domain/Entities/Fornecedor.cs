@@ -10,7 +10,7 @@ public class Fornecedor
     public string Cidade { get; private set; } = null!;
     public string Uf { get; private set; } = null!;
     public string Email { get; private set; } = null!;
-    public string? Telefone { get; private set; } = null!;
+    public string? Telefone { get; private set; }
     public Documento Documento { get; private set; } = null!;
     public decimal PorcentagemAVista { get; private set; }
     public decimal PorcentagemAPrazo { get; private set; }
@@ -57,14 +57,27 @@ public class Fornecedor
                 porcentagemAPrazo));
     }
     
-    public void EditarDados(string nome, string cidade, string uf, string email, string telefone, Documento documento)
+    public Result EditarDados(string nome, string cidade, string uf, string email, string? telefone)
     {
-        Nome = nome;
-        Cidade = cidade;
+        if (string.IsNullOrEmpty(nome))
+            return Result<Cliente>.Fail("Nome é obrigatório.");
+       
+        if (string.IsNullOrEmpty(cidade))
+            return Result<Cliente>.Fail("Cidade é obrigatório.");
+        
+        if (string.IsNullOrEmpty(uf))
+            return Result<Cliente>.Fail("Uf é obrigatório.");
+       
+        if (string.IsNullOrEmpty(email))
+            return Result<Cliente>.Fail("E-mail é obrigatório.");
+        
+        Nome = nome.Trim();
+        Cidade = cidade.Trim();
         Uf = uf;
-        Email = email;
-        Telefone = telefone;
-        Documento = documento;
+        Email = email.Trim();
+        if (telefone != null) Telefone = telefone.Trim();
+        
+        return Result.Success();
     }
     
     public void Ativar() => IsActive = true;
