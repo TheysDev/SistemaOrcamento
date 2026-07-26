@@ -8,6 +8,7 @@ public static class ProdutoBuilderExtension
     {
         builder.Services.AddScoped<CreateHandler>();
         builder.Services.AddScoped<EditHandler>();
+        builder.Services.AddScoped<DeleteHandler>();
         
         return builder;
     }

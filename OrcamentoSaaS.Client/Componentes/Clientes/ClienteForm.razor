@@ -1,0 +1,52 @@
+﻿@using OrcamentoSaaS.Shared.Dtos.Clientes
+@inject ClienteService ClienteService
+@inject NavigationManager NavigationManager
+
+<EditForm Model="Model" OnValidSubmit="Submit">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+    <div class="row mb-3">
+        <label for="inputNome" class="col-sm-2 col-form-label">Nome</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" @bind-Value="Model!.Nome" id="inputNome"/>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="inputCidade" class="col-sm-2 col-form-label">Cidade</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" @bind-Value="Model.Cidade" id="inputCidade"/>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="inputUf" class="col-sm-2 col-form-label">UF</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" @bind-Value="Model.Uf" id="inputUf"/>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+        <div class="col-sm-10">
+            <InputText type="email" class="form-control" @bind-Value="Model.Email" id="inputEmail"/>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="inputDocumento" class="col-sm-2 col-form-label">CNPJ/CPF</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" @bind-Value="Model.Documento" id="inputDocumento"/>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+</EditForm>
+
+@code{
+    
+    private ClienteCreateRequest? Model { get; set; } = new();
+    
+    private async Task Submit()
+    {
+        if (Model != null) await ClienteService.CreateClienteAsync(Model)!;
+        
+        NavigationManager.NavigateTo("/");
+    }
+}

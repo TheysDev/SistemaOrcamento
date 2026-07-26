@@ -17,6 +17,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseSqlServer(connectionString));
 
+builder.Services.AddCors(opt => opt.AddPolicy("CorsPolicy",
+    policy => policy
+        .WithOrigins("https://localhost:7132", "https://localhost:7247")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials()));
+
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication();
 builder.Services.AddValidation();
@@ -33,6 +40,8 @@ builder.AddCliente().AddFornecedor().AddProduto().AddOrcamento();
 
 var app = builder.Build();
 
+app.UseCors("CorsPolicy");
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();   
@@ -44,8 +53,6 @@ app.MapIdentityApi<AppUser>();
 var api = app.MapGroup("/api");
 
 api.MapCliente().MapFornecedor().MapOrcamento().MapProduto();
-
-
 
 
 var culture = new CultureInfo("pt-BR");
