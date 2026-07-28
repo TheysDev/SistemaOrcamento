@@ -1,4 +1,5 @@
-﻿using OrcamentoSaaS.Shared.Results;
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Domain.Entities;
 
@@ -117,7 +118,10 @@ public class Orcamento
     {
         if(Status != StatusOrcamento.Enviado)
             return Result.Fail("Não é possivel aprovar um orçamento que não foi enviado.");
-        
+
+        if (Total <= 0)
+            return Result<Pedido>.Fail("Valor do orcamento inválido.");
+            
         Status = StatusOrcamento.Aprovado;
         
         return Result.Success();

@@ -8,7 +8,9 @@ public class DeleteHandler(AppDbContext db)
         Guid id,
         CancellationToken ct)
     {
-        var orcamento = await db.Orcamentos.FirstOrDefaultAsync(o => o.Id == id, ct);
+        var orcamento = await db.Orcamentos
+            .Include(o => o.Itens)
+            .FirstOrDefaultAsync(o => o.Id == id, ct);
         
         if (orcamento is null)
             return Result.Fail("Orcamento não encontrato");
@@ -19,6 +21,7 @@ public class DeleteHandler(AppDbContext db)
         orcamento.Inativar();
         
         await  db.SaveChangesAsync(ct);
+        
         return Result.Success();
     }
 }

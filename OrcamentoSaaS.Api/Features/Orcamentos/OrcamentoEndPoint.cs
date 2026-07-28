@@ -66,6 +66,31 @@ public static class OrcamentoEndPoint
                 : Results.NoContent();
         });
 
+        group.MapPost("/enviar/{id:guid}", async (
+            Guid id,
+            EnviarHandler handler,
+            CancellationToken ct) =>
+        {
+            var result = await handler.Handle(id, ct);
+
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.NoContent();
+        });
+        
+        group.MapPost("/aprovar/{id:guid}", async (
+            Guid id,
+            ITenantProvider tenantProvider,
+            AprovarHandler handler,
+            CancellationToken ct) =>
+        {
+            var result = await handler.Handle(id,tenantProvider.TenantId, ct);
+
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.NoContent();
+        });
+
         return endpoints;
     }
 }

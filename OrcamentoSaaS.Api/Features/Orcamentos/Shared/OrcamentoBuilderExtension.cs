@@ -9,6 +9,8 @@ public static class OrcamentoBuilderExtension
         builder.Services.AddScoped<CreateHandler>();
         builder.Services.AddScoped<EditHandler>();
         builder.Services.AddScoped<DeleteHandler>();
+        builder.Services.AddScoped<EnviarHandler>();
+        builder.Services.AddScoped<AprovarHandler>();
         
         return builder;
     }

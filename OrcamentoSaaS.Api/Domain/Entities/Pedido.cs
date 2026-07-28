@@ -34,8 +34,23 @@ public class Pedido
     public static Result<Pedido> Criar(Guid tenantId, Guid orcamentoId, 
         int numeroParcelas, decimal valor, int codigo)
     {
-        var pedido = new Pedido(tenantId, orcamentoId, codigo);
+        if (numeroParcelas <= 0)
+            return Result<Pedido>.Fail("Número de parcelas inválido.");
+
+        if (valor <= 0)
+            return Result<Pedido>.Fail("Valor do pedido inválido.");
         
+        var pedido = new Pedido(tenantId, orcamentoId, codigo);
+
+        var result = pedido.GerarParcelas(tenantId, numeroParcelas, valor);
+        
+        return result.IsFailure 
+            ? Result<Pedido>.Fail(result.Error) 
+            : Result<Pedido>.Success(pedido);
+    }
+
+    private Result GerarParcelas(Guid tenantId, int numeroParcelas, decimal valor)
+    {
         var valorParcela = Math.Round(valor / numeroParcelas, 2);
         
         var restante = valor;
@@ -48,16 +63,15 @@ public class Pedido
             
             var vencimento = DateOnly.FromDateTime(DateTime.Today.AddMonths(i));
             
-            pedido._parcelas.Add(new Parcela(tenantId, i, valorAtual,vencimento));
+            _parcelas.Add(new Parcela(tenantId, i, valorAtual,vencimento));
             
             restante -= valorAtual;
         }
         
-        pedido.ValorTotal = pedido._parcelas.Sum(p => p.Valor);
+        ValorTotal = _parcelas.Sum(p => p.Valor);
         
-        return Result<Pedido>.Success(pedido);
+        return Result.Success();
     }
-    
     
     public void Ativar()
     {
