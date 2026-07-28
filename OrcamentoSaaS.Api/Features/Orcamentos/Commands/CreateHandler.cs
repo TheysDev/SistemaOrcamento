@@ -10,7 +10,7 @@ namespace OrcamentoSaaS.Api.Features.Orcamentos.Commands;
 public class CreateHandler(AppDbContext db)
 {
     public async Task<Result<OrcamentoResponse>> Handle(
-            OrcamentoCommand cmd, 
+            OrcamentoCreateCommand cmd, 
             CancellationToken ct)
     {
         var cliente = await db.Clientes.AsNoTracking()

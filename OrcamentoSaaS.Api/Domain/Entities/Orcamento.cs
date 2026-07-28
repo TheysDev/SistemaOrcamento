@@ -48,6 +48,12 @@ public class Orcamento
         ICollection<ItemOrcamento> itens, 
         int parcelas)
     {
+        if(clienteId == Guid.Empty)
+            return Result<Orcamento>.Fail("O Cliente deve ser informado.");
+        
+        if(fornecedorId == Guid.Empty)
+            return Result<Orcamento>.Fail("O Fornecedor deve ser informado.");
+        
         var existeItens = itens.Count != 0;
             
         if (!existeItens)
@@ -66,6 +72,27 @@ public class Orcamento
         }
         
         return Result<Orcamento>.Success(orcamento);
+    }
+    
+    public Result EditarDados(Guid clienteId,  Guid fornecedorId, DateOnly validade, int parcelas)
+    {
+        if(clienteId == Guid.Empty)
+            return Result.Fail("O Cliente deve ser informado.");
+        
+        if(fornecedorId == Guid.Empty)
+            return Result.Fail("O Fornecedor deve ser informado.");
+        
+        var vencimento = DateOnly.FromDateTime(DateTime.Now.AddDays(7));
+
+        if (validade < vencimento)
+            return Result<Orcamento>.Fail("A validade deve ser de uma semana ou mais");
+
+        ClienteId = clienteId;
+        FornecedorId = fornecedorId;
+        Validade = validade;
+        NumeroParcelas = parcelas;
+        
+        return Result.Success();
     }
     
     public Result Enviar()
@@ -102,6 +129,19 @@ public class Orcamento
     private void AdicionarItem(ItemOrcamento item)
     {
         _itens.Add(item);
+    }
+    
+    public Result SubstituirItens(ICollection<ItemOrcamento> novosItens)
+    {
+        if (novosItens.Count == 0)
+            return Result.Fail("O orçamento deve ter ao menos um item.");
+
+        _itens.Clear();
+
+        foreach (var item in novosItens)
+            _itens.Add(item);
+
+        return Result.Success();
     }
     
     public Result RemoverItem(Guid itemId)

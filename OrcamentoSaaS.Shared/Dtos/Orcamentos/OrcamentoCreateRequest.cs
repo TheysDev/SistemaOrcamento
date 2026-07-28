@@ -2,20 +2,23 @@
 
 namespace OrcamentoSaaS.Shared.Dtos.Orcamentos;
 
-public record OrcamentoRequest(
+public sealed record OrcamentoCreateRequest
+{
     [NotEmptyGuid(ErrorMessage = "Cliente é obrigatório.")]
-    Guid ClienteId,
+    public Guid ClienteId { get; set; }
 
     [NotEmptyGuid(ErrorMessage = "Fornecedor é obrigatório.")]
-    Guid FornecedorId,
+    public Guid FornecedorId { get; set; }
 
     [Range(1, 36, ErrorMessage = "Número de parcelas não pode ser 0 ou maior que 36.")]
-    int NumeroParcelas,
+    public int NumeroParcelas { get; set; }
     
     [Required(ErrorMessage = "Validade é obrigatória.")]
     [ValidadeDate (ErrorMessage = "A data de validade deve ser pelo menos 7 dias no futuro.")]
-    DateOnly Validade,
+    public DateOnly Validade { get; set; }
 
     [MinLength(1, ErrorMessage = "O orçamento deve possuir ao menos um item.")]
-    ICollection<ItemOrcamentoRequest> Itens
-);
+    public ICollection<ItemOrcamentoRequest> Itens { get; set; }
+}
+    
+

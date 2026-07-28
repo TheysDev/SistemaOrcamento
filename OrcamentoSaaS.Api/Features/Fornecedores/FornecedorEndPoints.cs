@@ -28,9 +28,9 @@ public static class FornecedorEndPoints
 
             var result = await handler.Handle(command, ct);
 
-            return result.IsSuccess
-                ? Results.Created($"/{result.Value.Id}", result.Value)
-                : Results.BadRequest(new { error = result.Error });
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.Created($"/{result.Value.Id}", result.Value);
         });
 
         group.MapPut("/{id:guid}", async (
