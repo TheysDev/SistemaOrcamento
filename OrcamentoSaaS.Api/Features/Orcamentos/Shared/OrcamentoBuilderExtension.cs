@@ -11,6 +11,8 @@ public static class OrcamentoBuilderExtension
         builder.Services.AddScoped<DeleteHandler>();
         builder.Services.AddScoped<EnviarHandler>();
         builder.Services.AddScoped<AprovarHandler>();
+        builder.Services.AddScoped<RejeitarHandler>();
+        builder.Services.AddScoped<CancelarHandler>();
         
         return builder;
     }

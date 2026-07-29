@@ -75,7 +75,11 @@ public class Orcamento
         return Result<Orcamento>.Success(orcamento);
     }
     
-    public Result EditarDados(Guid clienteId,  Guid fornecedorId, DateOnly validade, int parcelas)
+    public Result EditarDados(
+        Guid clienteId,  
+        Guid fornecedorId, 
+        DateOnly validade, 
+        int parcelas)
     {
         if(clienteId == Guid.Empty)
             return Result.Fail("O Cliente deve ser informado.");
@@ -118,6 +122,11 @@ public class Orcamento
     {
         if(Status != StatusOrcamento.Enviado)
             return Result.Fail("Não é possivel aprovar um orçamento que não foi enviado.");
+        
+        var data = DateOnly.FromDateTime(DateTime.UtcNow);
+        
+        if(data > Validade)
+            return Result.Fail("Não é possível aprovar um orçamento vencido.");
 
         if (Total <= 0)
             return Result<Pedido>.Fail("Valor do orcamento inválido.");
@@ -125,10 +134,27 @@ public class Orcamento
         Status = StatusOrcamento.Aprovado;
         
         return Result.Success();
+    }
+
+    public Result Rejeitar()
+    {
+        if(Status != StatusOrcamento.Enviado)
+            return Result.Fail("Não é possivel rejeitar um orçamento que não foi enviado.");
+        
+        Status = StatusOrcamento.Rejeitado;
+        
+        return Result.Success();
+    }
+
+    public Result Cancelar()
+    {
+        if(Status is StatusOrcamento.Rejeitado or StatusOrcamento.Aprovado)
+            return Result.Fail("Não é possivel cancelar um orçamento com status: Aprovado ou Rejeitado.");
+        
+        Status = StatusOrcamento.Cancelado;
+        
+        return Result.Success();
     } 
-    
-    public void Rejeitar() => Status = StatusOrcamento.Rejeitado;
-    public  void Cancelar() => Status = StatusOrcamento.Cancelado;
 
     private void AdicionarItem(ItemOrcamento item)
     {
@@ -145,16 +171,6 @@ public class Orcamento
         foreach (var item in novosItens)
             _itens.Add(item);
 
-        return Result.Success();
-    }
-    
-    public Result RemoverItem(Guid itemId)
-    {
-        var item = _itens.FirstOrDefault(i => i.Id == itemId);
-        
-        if (item != null)
-            _itens.Remove(item);
-        
         return Result.Success();
     }
     

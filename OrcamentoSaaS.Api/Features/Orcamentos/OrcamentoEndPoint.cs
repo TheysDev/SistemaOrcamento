@@ -90,6 +90,30 @@ public static class OrcamentoEndPoint
                 ? Results.BadRequest(new { error = result.Error })
                 : Results.NoContent();
         });
+        
+        group.MapPost("/rejeitar/{id:guid}", async (
+            Guid id,
+            RejeitarHandler handler,
+            CancellationToken ct) =>
+        {
+            var result = await handler.Handle(id, ct);
+
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.NoContent();
+        });
+        
+        group.MapPost("/cancelar/{id:guid}", async (
+            Guid id,
+            CancelarHandler handler,
+            CancellationToken ct) =>
+        {
+            var result = await handler.Handle(id, ct);
+
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.NoContent();
+        });
 
         return endpoints;
     }
