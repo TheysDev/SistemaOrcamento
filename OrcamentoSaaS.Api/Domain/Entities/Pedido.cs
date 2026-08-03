@@ -72,6 +72,24 @@ public class Pedido
         
         return Result.Success();
     }
+
+    public Result PagarParcelas(Guid parcelaId, DateOnly dataPagamento)
+    {
+        var parcela = Parcelas.FirstOrDefault(x => x.Id == parcelaId);
+
+        if (parcela is null)
+            return Result.Fail("Parcela não encontrada.");
+        
+        var result = parcela.Pagar(dataPagamento);
+
+        if (result.IsFailure)
+            return result;
+
+        if (Parcelas.All(p => p.Paga))
+            Status = StatusPedido.Pago;
+
+        return Result.Success();
+    }
     
     public void Ativar()
     {

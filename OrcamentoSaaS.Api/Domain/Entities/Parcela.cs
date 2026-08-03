@@ -1,4 +1,6 @@
-﻿namespace OrcamentoSaaS.Api.Domain.Entities;
+﻿using OrcamentoSaaS.Shared.Results;
+
+namespace OrcamentoSaaS.Api.Domain.Entities;
 
 public class Parcela
 {
@@ -18,7 +20,7 @@ public class Parcela
     protected Parcela()
     {}
 
-    public Parcela(Guid tenantId, int numeroParcelas, decimal valor, DateOnly vencimento)
+    internal Parcela(Guid tenantId, int numeroParcelas, decimal valor, DateOnly vencimento)
     {
         TenantId = tenantId;
         Numero = numeroParcelas;
@@ -26,8 +28,14 @@ public class Parcela
         Vencimento = vencimento;
     }
     
-    public void PagarParcela()
+    public Result Pagar(DateOnly dataPagamento)
     {
-        DataPagamento = DateOnly.FromDateTime(DateTime.Now);;
+        if (Paga)
+            return Result.Fail("Parcela já esta paga");
+
+        DataPagamento = dataPagamento;
+        
+        return Result.Success();
     }
+    
 }

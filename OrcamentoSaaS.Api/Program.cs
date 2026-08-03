@@ -6,6 +6,8 @@ using OrcamentoSaaS.Api.Features.Fornecedores;
 using OrcamentoSaaS.Api.Features.Fornecedores.Shared;
 using OrcamentoSaaS.Api.Features.Orcamentos;
 using OrcamentoSaaS.Api.Features.Orcamentos.Shared;
+using OrcamentoSaaS.Api.Features.Pedidos;
+using OrcamentoSaaS.Api.Features.Pedidos.Shared;
 using OrcamentoSaaS.Api.Features.Produtos;
 using OrcamentoSaaS.Api.Features.Produtos.Shared;
 
@@ -36,7 +38,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITenantProvider, TenantProvider>();
 
 //DI Create
-builder.AddCliente().AddFornecedor().AddProduto().AddOrcamento();
+builder.AddCliente().AddFornecedor().AddProduto().AddOrcamento().AddPedido();
 
 var app = builder.Build();
 
@@ -52,7 +54,7 @@ app.MapIdentityApi<AppUser>();
 //EndPoints
 var api = app.MapGroup("/api");
 
-api.MapCliente().MapFornecedor().MapOrcamento().MapProduto();
+api.MapCliente().MapFornecedor().MapOrcamento().MapProduto().MapPedido();
 
 
 var culture = new CultureInfo("pt-BR");

@@ -179,7 +179,7 @@ public class Orcamento
     public Result Inativar()
     {
         if (Status != StatusOrcamento.Rascunho)
-            return Result.Fail("Não é possivel excluir orcamento com status diferente que rascunho");
+            return Result.Fail("É possivel deletar orcamento apenas com status: Rascunho");
         
         IsActive = false;
         

@@ -14,11 +14,11 @@ public class DeleteHandler(AppDbContext db)
         
         if (orcamento is null)
             return Result.Fail("Orcamento não encontrato");
-
-        if (orcamento.Status != StatusOrcamento.Rascunho)
-            return Result.Fail("É possivel deletar orcamento apenas com status: Rascunho");
-
-        orcamento.Inativar();
+        
+        var result = orcamento.Inativar();
+        
+        if (result.IsFailure)
+            return Result.Fail(result.Error);
         
         await  db.SaveChangesAsync(ct);
         
