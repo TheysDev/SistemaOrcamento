@@ -2,7 +2,7 @@
 
 namespace OrcamentoSaaS.Api.Features.Fornecedores.Commands;
 
-public class DeleteHandler(AppDbContext db)
+public class DeleteFornecedorHandler(AppDbContext db)
 {
     public async Task<Result> Handle(
         Guid id,
@@ -12,6 +12,12 @@ public class DeleteHandler(AppDbContext db)
 
         if (fornecedor is null)
             return Result.Fail("Fornecedor não encontrado");
+        
+        var possuiOrcamentos = await db.Orcamentos
+            .AnyAsync(o => o.FornecedorId == id, ct);
+
+        if (possuiOrcamentos)
+            return Result.Fail("Não é possível excluir um fornecedor que possui orçamentos cadastrados.");
         
         fornecedor.Inativar();
         

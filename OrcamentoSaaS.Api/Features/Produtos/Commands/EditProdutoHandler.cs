@@ -4,7 +4,7 @@ using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Produtos.Commands;
 
-public class EditHandler(AppDbContext db)
+public class EditProdutoHandler(AppDbContext db)
 {
     public async Task<Result<ProdutoResponse>> Handle(
             ProdutoEditCommand cmd, 

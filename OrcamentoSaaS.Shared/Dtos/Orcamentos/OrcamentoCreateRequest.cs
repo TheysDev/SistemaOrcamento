@@ -19,6 +19,9 @@ public sealed record OrcamentoCreateRequest
 
     [MinLength(1, ErrorMessage = "O orçamento deve possuir ao menos um item.")]
     public ICollection<ItemOrcamentoRequest> Itens { get; set; }
+    
+    [MaxLength(1000, ErrorMessage = "Maximo 1.000 caracteres")]
+    public string? Observacao { get; set; }
 }
     
 

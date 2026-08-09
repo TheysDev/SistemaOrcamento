@@ -19,6 +19,8 @@ public class Pedido
    
     public bool IsActive { get; private set; }
     
+    public string CodigoFormatado => $"PED - {Codigo:D6}";
+    
     protected Pedido()
     {}
 

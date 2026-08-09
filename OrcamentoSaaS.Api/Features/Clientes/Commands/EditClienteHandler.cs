@@ -4,7 +4,7 @@ using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Clientes.Commands;
 
-public class EditHandler(AppDbContext db)
+public class EditClienteHandler(AppDbContext db)
 {
     public async Task<Result<ClienteResponse>> Handle(
         ClienteEditCommand cmd,

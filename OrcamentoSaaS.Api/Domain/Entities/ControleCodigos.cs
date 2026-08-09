@@ -7,14 +7,6 @@ public class ControleCodigos
     public int? CodigoOrcamento { get; private set; }
     public int? CodigoPedido { get; private set; }
     
-    public string OrcamentoFormatado => CodigoOrcamento.HasValue 
-        ? $"ORC - {CodigoOrcamento.Value:D6}" 
-        : "ORC - 000000";
-
-    public string PedidoFormatado => CodigoPedido.HasValue 
-        ? $"PED - {CodigoPedido.Value:D6}" 
-        : "PED - 000000";
-
     protected ControleCodigos() { }
 
     public ControleCodigos(int? codigoOrcamento, int? codigoPedido)

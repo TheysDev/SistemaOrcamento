@@ -2,7 +2,7 @@
 
 namespace OrcamentoSaaS.Api.Features.Produtos.Commands;
 
-public class DeleteHandler(AppDbContext db)
+public class DeleteProdutoHandler(AppDbContext db)
 {
     public async Task<Result> Handle(
         Guid id, 

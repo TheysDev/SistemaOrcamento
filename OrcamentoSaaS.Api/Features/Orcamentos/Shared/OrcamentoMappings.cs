@@ -14,7 +14,8 @@ public static class OrcamentoMappings
             codigo,
             cmd.Validade,
             itens,
-            cmd.NumeroParcelas);
+            cmd.NumeroParcelas,
+            cmd.Observacao);
     }
 
     public static Result<ItemOrcamento> ToEntity(this ItemOrcamentoRequest req, Guid tenantId, decimal valor)

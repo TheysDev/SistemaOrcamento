@@ -1,4 +1,5 @@
 ﻿using OrcamentoSaaS.Api.Features.Clientes.Commands;
+using OrcamentoSaaS.Api.Features.Clientes.Queries;
 using OrcamentoSaaS.Shared.Dtos.Clientes;
 
 namespace OrcamentoSaaS.Api.Features.Clientes;
@@ -12,7 +13,7 @@ public static class ClienteEndPoints
         group.MapPost("/", async (
             ClienteCreateRequest req,
             ITenantProvider tenantProvider,
-            CreateHandler handler,
+            CreateClienteHandler clienteHandler,
             CancellationToken ct) =>
         {
             var command = new ClienteCreateCommand(
@@ -24,7 +25,7 @@ public static class ClienteEndPoints
                 req.Telefone,
                 req.Documento);
 
-            var result = await handler.Handle(command, ct);
+            var result = await clienteHandler.Handle(command, ct);
 
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
@@ -35,7 +36,7 @@ public static class ClienteEndPoints
             Guid id,
             ClienteEditRequest req,
             ITenantProvider tenantProvider, 
-            EditHandler handler,
+            EditClienteHandler clienteHandler,
             CancellationToken ct
         ) =>
         {
@@ -48,7 +49,7 @@ public static class ClienteEndPoints
                 req.Email,
                 req.Telefone);
 
-            var result = await handler.Handle(command, ct);
+            var result = await clienteHandler.Handle(command, ct);
 
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
@@ -57,14 +58,27 @@ public static class ClienteEndPoints
         
         group.MapDelete("/{id:guid}", async (
             Guid id,
-            DeleteHandler handler,
+            DeleteClienteHandler clienteHandler,
             CancellationToken ct) =>
         {
-            var result = await handler.Handle(id, ct);
+            var result = await clienteHandler.Handle(id, ct);
 
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
                 : Results.NoContent();
+        });
+        
+        group.MapGet("/", async (
+            int pagina,
+            int tamanhoPagina,
+            GetAllClientesHandler clientesHandler,
+            CancellationToken ct) =>
+        {
+            var result = await clientesHandler.Handle(pagina, tamanhoPagina, ct);
+
+            return !result.IsSuccess
+                ? Results.NotFound(result.Error)
+                : Results.Ok(result.Value);
         });
 
         return endpoints;

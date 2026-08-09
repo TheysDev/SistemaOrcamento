@@ -1,8 +1,5 @@
-﻿using OrcamentoSaaS.Shared.Dtos.Clientes;
-using OrcamentoSaaS.Shared.Dtos.Fornecedores;
-using OrcamentoSaaS.Shared.Dtos.Orcamentos;
+﻿using OrcamentoSaaS.Shared.Dtos.Orcamentos;
 using OrcamentoSaaS.Shared.Dtos.Produtos;
-using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Orcamentos.Shared;
 
@@ -10,15 +7,15 @@ public static class OrcamentoResponseMappings
 {
     public static OrcamentoResponse ToResponse(this Orcamento orcamento, 
         ICollection<ItemOrcamentoResponse> itensResponse,
-        ClienteResponse cliente,
-        FornecedorResponse fornecedor)
+        ClienteResumoResponse clienteResumo,
+        FornecedorResumoResponse fornecedorResumo)
     {
         return new OrcamentoResponse(
             orcamento.Id,
-            cliente,
-            fornecedor,
+            clienteResumo,
+            fornecedorResumo,
             itensResponse,
-            orcamento.Codigo,
+            orcamento.CodigoFormatado,
             orcamento.Validade,
             orcamento.NumeroParcelas,
             orcamento.Total,
@@ -30,7 +27,7 @@ public static class OrcamentoResponseMappings
     {
         return new ItemOrcamentoResponse(
             itemOrcamento.Id,
-            produto,
+            itemOrcamento.Produto.Descricao,
             itemOrcamento.Quantidade,
             itemOrcamento.Valor,
             itemOrcamento.Desconto,

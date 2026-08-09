@@ -2,7 +2,7 @@
 
 namespace OrcamentoSaaS.Api.Features.Clientes.Commands;
 
-public class DeleteHandler(AppDbContext db)
+public class DeleteClienteHandler(AppDbContext db)
 {
     public async Task<Result> Handle(
         Guid id,
@@ -12,6 +12,12 @@ public class DeleteHandler(AppDbContext db)
 
         if (cliente is null)
             return Result.Fail("Cliente não encontrado");
+        
+        var possuiOrcamentos = await db.Orcamentos
+            .AnyAsync(o => o.ClienteId == id, ct);
+
+        if (possuiOrcamentos)
+            return Result.Fail("Não é possível excluir um cliente que possui orçamentos cadastrados.");
         
         cliente.Inativar();
         

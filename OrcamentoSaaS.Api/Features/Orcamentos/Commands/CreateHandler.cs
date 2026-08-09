@@ -80,8 +80,8 @@ public class CreateHandler(AppDbContext db)
             
             await transaction.CommitAsync(ct);
             
-            var clienteResponse = cliente.ToResponse();
-            var fornecedorResponse = fornecedor.ToResponse();
+            var clienteResponse = cliente.ToResumoResponse();
+            var fornecedorResponse = fornecedor.ToResumoResponse();
             
             var itensResponse = itensValidos.Select(item => 
             {

@@ -4,7 +4,7 @@ using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Produtos.Commands;
 
-public class CreateHandler(AppDbContext db)
+public class CreateProdutoHandler(AppDbContext db)
 {
     public async Task<Result<ProdutoResponse>> Handle(ProdutoCreateCommand cmd, CancellationToken ct)
     {

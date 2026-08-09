@@ -23,12 +23,15 @@ public class Orcamento
     public decimal Total => _itens.Sum(i => i.Total);
     public decimal Desconto => _itens.Sum(i => i.Desconto);
     public StatusOrcamento Status { get; private set; }
+    public string? Observacao { get; private set; } 
     public bool IsActive { get; private set; }
+    
+    public string CodigoFormatado => $"ORC - {Codigo:D6}";
     
     protected Orcamento()
     {}
 
-    private Orcamento(Guid tenantId, Guid clienteId, Guid fornecedorId, int codigo, DateOnly validade, int parcelas)
+    private Orcamento(Guid tenantId, Guid clienteId, Guid fornecedorId, int codigo, DateOnly validade, int parcelas, string? observacao)
     {
         TenantId = tenantId;
         ClienteId = clienteId;
@@ -37,6 +40,7 @@ public class Orcamento
         Validade = validade;
         NumeroParcelas = parcelas;
         Status = StatusOrcamento.Rascunho;
+        Observacao = observacao;
         IsActive = true;
     }
 
@@ -47,7 +51,8 @@ public class Orcamento
         int codigo,
         DateOnly validade, 
         ICollection<ItemOrcamento> itens, 
-        int parcelas)
+        int parcelas,
+        string? observacao)
     {
         if(clienteId == Guid.Empty)
             return Result<Orcamento>.Fail("O Cliente deve ser informado.");
@@ -65,7 +70,7 @@ public class Orcamento
         if (validade < vencimento)
             return Result<Orcamento>.Fail("A validade deve ser de uma semana ou mais");
         
-        var orcamento = new Orcamento(tenantId, clienteId, fornecedorId, codigo, validade, parcelas);
+        var orcamento = new Orcamento(tenantId, clienteId, fornecedorId, codigo, validade, parcelas, observacao);
 
         foreach (var item in itens)
         {

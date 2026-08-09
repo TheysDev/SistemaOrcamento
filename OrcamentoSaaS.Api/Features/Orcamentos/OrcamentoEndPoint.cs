@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrcamentoSaaS.Api.Features.Orcamentos.Commands;
+using OrcamentoSaaS.Api.Features.Orcamentos.Queries;
 using OrcamentoSaaS.Shared.Dtos.Orcamentos;
 
 namespace OrcamentoSaaS.Api.Features.Orcamentos;
@@ -22,7 +23,8 @@ public static class OrcamentoEndPoint
                 req.FornecedorId,
                 req.Validade,
                 req.NumeroParcelas,
-                req.Itens);
+                req.Itens,
+                req.Observacao);
             
             var result = await handler.Handle(command, ct);
 
@@ -113,6 +115,18 @@ public static class OrcamentoEndPoint
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
                 : Results.NoContent();
+        });
+
+        group.MapGet("/{id:guid}", async (
+            Guid id,
+            GetByIdHandler handler,
+            CancellationToken ct) =>
+        {
+            var result = await handler.Handle(id, ct);
+
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.Ok(result.Value);
         });
 
         return endpoints;

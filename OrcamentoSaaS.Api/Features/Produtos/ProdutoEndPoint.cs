@@ -12,7 +12,7 @@ public static class ProdutoEndPoint
         group.MapPost("/", async (
             ProdutoCreateRequest req,
             ITenantProvider tenantProvider,
-            CreateHandler handler,
+            CreateProdutoHandler produtoHandler,
             CancellationToken ct
             ) =>
         {
@@ -23,7 +23,7 @@ public static class ProdutoEndPoint
                 req.Valor,
                 req.Detalhes);
             
-            var result = await handler.Handle(command, ct);
+            var result = await produtoHandler.Handle(command, ct);
 
             return !result.IsSuccess 
                 ? Results.BadRequest(new {error = result.Error}) 
@@ -33,7 +33,7 @@ public static class ProdutoEndPoint
         group.MapPut("/{id:guid}", async (
             Guid id,
             ProdutoEditRequest req,
-            EditHandler handler,
+            EditProdutoHandler produtoHandler,
             ITenantProvider tenantProvider,
             CancellationToken ct) =>
         {
@@ -44,7 +44,7 @@ public static class ProdutoEndPoint
                 req.Valor,
                 req.Detalhes);
 
-            var result = await handler.Handle(command, ct);
+            var result = await produtoHandler.Handle(command, ct);
 
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
@@ -53,11 +53,11 @@ public static class ProdutoEndPoint
 
         group.MapDelete("/{id:guid}", async (
             Guid id,
-            DeleteHandler handler,
+            DeleteProdutoHandler produtoHandler,
             CancellationToken ct
         ) =>
         {
-            var result = await handler.Handle(id, ct);
+            var result = await produtoHandler.Handle(id, ct);
 
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })

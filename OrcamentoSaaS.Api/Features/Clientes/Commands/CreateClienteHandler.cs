@@ -4,7 +4,7 @@ using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Clientes.Commands;
 
-public class CreateHandler(AppDbContext db)
+public class CreateClienteHandler(AppDbContext db)
 {
     public async Task<Result<ClienteResponse>> Handle(
         ClienteCreateCommand cmd, 

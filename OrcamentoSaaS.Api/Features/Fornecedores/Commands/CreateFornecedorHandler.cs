@@ -4,7 +4,7 @@ using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Fornecedores.Commands;
 
-public class CreateHandler(AppDbContext db)
+public class CreateFornecedorHandler(AppDbContext db)
 {
     public async Task<Result<FornecedorResponse>> Handle(
         FornecedorCreateCommand cmd, 

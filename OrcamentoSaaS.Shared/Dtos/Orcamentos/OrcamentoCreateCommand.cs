@@ -6,5 +6,6 @@ public record OrcamentoCreateCommand(
     Guid FornecedorId,
     DateOnly Validade,
     int NumeroParcelas,
-    ICollection<ItemOrcamentoRequest> Itens
+    ICollection<ItemOrcamentoRequest> Itens,
+    string? Observacao
 );

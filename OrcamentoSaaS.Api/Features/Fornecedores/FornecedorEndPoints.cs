@@ -1,4 +1,5 @@
 ﻿using OrcamentoSaaS.Api.Features.Fornecedores.Commands;
+using OrcamentoSaaS.Api.Features.Fornecedores.Queries;
 using OrcamentoSaaS.Shared.Dtos.Fornecedores;
 
 namespace OrcamentoSaaS.Api.Features.Fornecedores;
@@ -12,7 +13,7 @@ public static class FornecedorEndPoints
         group.MapPost("/", async (
             FornecedorCreateRequest req,
             ITenantProvider tenantProvider,
-            CreateHandler handler,
+            CreateFornecedorHandler fornecedorHandler,
             CancellationToken ct) =>
         {
             var command = new FornecedorCreateCommand(
@@ -26,7 +27,7 @@ public static class FornecedorEndPoints
                 req.PorcentagemAVista,
                 req.PorcentagemAPrazo);
 
-            var result = await handler.Handle(command, ct);
+            var result = await fornecedorHandler.Handle(command, ct);
 
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
@@ -37,7 +38,7 @@ public static class FornecedorEndPoints
             Guid id,
             FornecedorEditRequest req,
             ITenantProvider tenantProvider,
-            EditHandler handler,
+            EditFornecedorHandler fornecedorHandler,
             CancellationToken ct) =>
         {
             var command = new FornecedorEditCommand(
@@ -49,7 +50,7 @@ public static class FornecedorEndPoints
                 req.Email,
                 req.Telefone);
 
-            var result = await handler.Handle(command, ct);
+            var result = await fornecedorHandler.Handle(command, ct);
 
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
@@ -58,14 +59,27 @@ public static class FornecedorEndPoints
 
         group.MapDelete("/{id:guid}", async (
             Guid id,
-            DeleteHandler handler,
+            DeleteFornecedorHandler fornecedorHandler,
             CancellationToken ct) =>
         {
-            var result = await handler.Handle(id, ct);
+            var result = await fornecedorHandler.Handle(id, ct);
             
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
                 : Results.NoContent();
+        });
+        
+        group.MapGet("/", async (
+            int pagina,
+            int tamanhoPagina,
+            GetAllFornecedoresHandler fornecedoresHandler,
+            CancellationToken ct) =>
+        {
+            var result = await fornecedoresHandler.Handle(pagina, tamanhoPagina, ct);
+
+            return !result.IsSuccess
+                ? Results.NotFound(result.Error)
+                : Results.Ok(result.Value);
         });
 
         return endpoints;

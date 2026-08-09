@@ -70,8 +70,8 @@ public class EditHandler(AppDbContext db)
         
         await db.SaveChangesAsync(ct);
         
-        var clienteResponse = cliente.ToResponse();
-        var fornecedorResponse = fornecedor.ToResponse();
+        var clienteResponse = cliente.ToResumoResponse();
+        var fornecedorResponse = fornecedor.ToResumoResponse();
             
         var itensResponse = itensValidos.Select(item => 
         {

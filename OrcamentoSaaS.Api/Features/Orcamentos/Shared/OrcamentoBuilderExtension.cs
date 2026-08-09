@@ -1,4 +1,5 @@
 ﻿using OrcamentoSaaS.Api.Features.Orcamentos.Commands;
+using OrcamentoSaaS.Api.Features.Orcamentos.Queries;
 
 namespace OrcamentoSaaS.Api.Features.Orcamentos.Shared;
 
@@ -13,6 +14,8 @@ public static class OrcamentoBuilderExtension
         builder.Services.AddScoped<AprovarHandler>();
         builder.Services.AddScoped<RejeitarHandler>();
         builder.Services.AddScoped<CancelarHandler>();
+
+        builder.Services.AddScoped<GetByIdHandler>();
         
         return builder;
     }
