@@ -3,14 +3,14 @@ using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Orcamentos.Queries;
 
-public class GetByIdHandler(AppDbContext db)
+public class GetBuscarOrcamentoDetalhesHandler(AppDbContext db)
 {
-    public async Task<Result<OrcamentoResponse>> Handle(Guid id, CancellationToken ct)
+    public async Task<Result<OrcamentoDetalhesResponse>> Handle(Guid id, CancellationToken ct)
     {
         var response = await db.Orcamentos
             .AsNoTracking()
             .Where(o => o.Id == id)
-            .Select(o => new OrcamentoResponse(
+            .Select(o => new OrcamentoDetalhesResponse(
                 o.Id,
                 new ClienteResumoResponse(
                     o.Cliente.Id,
@@ -22,21 +22,20 @@ public class GetByIdHandler(AppDbContext db)
                     i.Id,
                     i.Produto.Descricao,
                     i.Quantidade,
-                    i.Valor,
-                    i.Desconto,
+                    i.ValorItem,
+                    i.DescontoItem,
                     i.Total))
                     .ToList(),
                 o.CodigoFormatado,
                 o.Validade,
                 o.NumeroParcelas,
-                o.Total,
+                o.Valor,
                 o.Desconto,
                 o.Status))
             .FirstOrDefaultAsync(ct);
         
-        if (response is null)
-            return Result<OrcamentoResponse>.Fail("Orcamento não encontrado");
-        
-        return Result<OrcamentoResponse>.Success(response);
+        return response is null 
+            ? Result<OrcamentoDetalhesResponse>.Fail("Orcamento não encontrado") 
+            : Result<OrcamentoDetalhesResponse>.Success(response);
     }
 }

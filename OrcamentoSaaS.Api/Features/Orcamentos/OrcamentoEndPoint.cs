@@ -47,6 +47,7 @@ public static class OrcamentoEndPoint
                 req.FornecedorId,
                 req.Validade,
                 req.NumeroParcelas,
+                req.Observacao,
                 req.Itens);
 
             var result = await handler.Handle(command, ct);
@@ -119,10 +120,23 @@ public static class OrcamentoEndPoint
 
         group.MapGet("/{id:guid}", async (
             Guid id,
-            GetByIdHandler handler,
+            GetBuscarOrcamentoDetalhesHandler handler,
             CancellationToken ct) =>
         {
             var result = await handler.Handle(id, ct);
+
+            return !result.IsSuccess
+                ? Results.BadRequest(new { error = result.Error })
+                : Results.Ok(result.Value);
+        });
+        
+        group.MapGet("/", async (
+            int pagina,
+            int tamanhoPagina,
+            GetBuscarOrcamentosHandler handler,
+            CancellationToken ct) =>
+        {
+            var result = await handler.Handle(pagina, tamanhoPagina, ct);
 
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })

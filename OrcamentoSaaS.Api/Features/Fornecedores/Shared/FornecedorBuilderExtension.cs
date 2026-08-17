@@ -11,7 +11,8 @@ public static class FornecedorBuilderExtension
         builder.Services.AddScoped<EditFornecedorHandler>();
         builder.Services.AddScoped<DeleteFornecedorHandler>();
         
-        builder.Services.AddScoped<GetAllFornecedoresHandler>();
+        builder.Services.AddScoped<GetBuscarFornecedoresHandler>();
+        builder.Services.AddScoped<GetFornecedorDetalhesHandler>();
         
         return builder;
     }

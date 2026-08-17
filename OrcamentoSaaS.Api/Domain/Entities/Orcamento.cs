@@ -20,8 +20,8 @@ public class Orcamento
     public int Codigo { get; init; }
     public DateOnly Validade { get; private set; }
     public int NumeroParcelas { get; private set; }
-    public decimal Total => _itens.Sum(i => i.Total);
-    public decimal Desconto => _itens.Sum(i => i.Desconto);
+    public decimal Valor => _itens.Sum(i => i.Total);
+    public decimal Desconto => _itens.Sum(i => i.DescontoItem);
     public StatusOrcamento Status { get; private set; }
     public string? Observacao { get; private set; } 
     public bool IsActive { get; private set; }
@@ -133,7 +133,7 @@ public class Orcamento
         if(data > Validade)
             return Result.Fail("Não é possível aprovar um orçamento vencido.");
 
-        if (Total <= 0)
+        if (Valor <= 0)
             return Result<Pedido>.Fail("Valor do orcamento inválido.");
             
         Status = StatusOrcamento.Aprovado;

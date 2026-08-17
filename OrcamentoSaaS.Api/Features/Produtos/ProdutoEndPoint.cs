@@ -1,4 +1,5 @@
 ﻿using OrcamentoSaaS.Api.Features.Produtos.Commands;
+using OrcamentoSaaS.Api.Features.Produtos.Queries;
 using OrcamentoSaaS.Shared.Dtos.Produtos;
 
 namespace OrcamentoSaaS.Api.Features.Produtos;
@@ -62,6 +63,18 @@ public static class ProdutoEndPoint
             return !result.IsSuccess
                 ? Results.BadRequest(new { error = result.Error })
                 : Results.NoContent();
+        });
+        
+        group.MapGet("/", async (
+            [AsParameters] ProdutoQuery query,
+            GetBuscarProdutosHandler produtoHandler,
+            CancellationToken ct) =>
+        {
+            var result = await produtoHandler.Handle(query, ct);
+
+            return !result.IsSuccess
+                ? Results.NotFound(result.Error)
+                : Results.Ok(result.Value);
         });
         
         return endpoints;

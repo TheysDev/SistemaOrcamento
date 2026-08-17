@@ -14,7 +14,7 @@ public class PagarParcelaHandler(AppDbContext db)
             .FirstOrDefaultAsync(p => p.Id == cmd.PedidoId, ct);
 
         if (pedido is null)
-            return Result.Fail("Peido não encontrato");
+            return Result.Fail("Pedido não encontrato");
 
         var result = pedido!.PagarParcelas(cmd.ParcelaId, cmd.DataPagamento);
 

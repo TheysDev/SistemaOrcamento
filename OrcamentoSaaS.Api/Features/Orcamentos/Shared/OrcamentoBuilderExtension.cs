@@ -15,7 +15,8 @@ public static class OrcamentoBuilderExtension
         builder.Services.AddScoped<RejeitarHandler>();
         builder.Services.AddScoped<CancelarHandler>();
 
-        builder.Services.AddScoped<GetByIdHandler>();
+        builder.Services.AddScoped<GetBuscarOrcamentoDetalhesHandler>();
+        builder.Services.AddScoped<GetBuscarOrcamentosHandler>();
         
         return builder;
     }

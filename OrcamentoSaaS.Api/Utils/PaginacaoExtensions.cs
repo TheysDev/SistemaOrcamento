@@ -2,7 +2,8 @@
 
 public static class PaginacaoExtensions
 {
-    public static async Task<PaginacaoResponse<T>> PaginarAsync<T>(this IQueryable<T> source, int pagina, int tamanhoPagina, CancellationToken ct)
+    public static async Task<PaginacaoResponse<T>> PaginarAsync<T>(this IQueryable<T> source, int pagina, 
+        int tamanhoPagina, CancellationToken ct)
     {
         var totalItens = await source.CountAsync(ct);
 

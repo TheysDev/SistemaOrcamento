@@ -11,4 +11,9 @@ public class ClienteService(IHttpClientFactory factory)
     {
         await _httpClient.PostAsJsonAsync($"api/cliente", req);
     }
+
+    public async Task BuscarClientesAsync(ClienteQuery req)
+    {
+        await  _httpClient.GetAsync($"api/cliente?{req}");
+    }
 }

@@ -14,9 +14,9 @@ public class ItemOrcamento
     public Produto Produto { get; private set; } = null!;
 
     public int Quantidade { get; private set; }
-    public decimal Valor { get; private set; }
-    public decimal Desconto { get; private set; }
-    public decimal Total => (Quantidade * Valor) - Desconto;
+    public decimal ValorItem { get; private set; }
+    public decimal DescontoItem { get; private set; }
+    public decimal Total => (Quantidade * ValorItem) - DescontoItem;
     public bool IsActive { get; private set; }
 
 
@@ -29,8 +29,8 @@ public class ItemOrcamento
         TenantId = tenantId;
         ProdutoId = produtoId;
         Quantidade = quantidade;
-        Valor = valor;
-        Desconto = desconto;
+        ValorItem = valor;
+        DescontoItem = desconto;
         IsActive = true;
     }
     

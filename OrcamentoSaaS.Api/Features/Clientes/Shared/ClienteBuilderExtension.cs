@@ -11,7 +11,8 @@ public static class ClienteBuilderExtension
         builder.Services.AddScoped<EditClienteHandler>();
         builder.Services.AddScoped<DeleteClienteHandler>();
 
-        builder.Services.AddScoped<GetAllClientesHandler>();
+        builder.Services.AddScoped<GetBuscarClientesHandler>();
+        builder.Services.AddScoped<GetClienteDetalhesHandler>();
         
         return builder;
     }

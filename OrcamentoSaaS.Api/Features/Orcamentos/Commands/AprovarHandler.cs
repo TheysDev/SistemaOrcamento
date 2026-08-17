@@ -38,7 +38,7 @@ public class AprovarHandler(AppDbContext db)
             if (result.IsFailure)
                 return Result.Fail(result.Error);
 
-            var resultPedido = Pedido.Criar(tenantId, id, orcamento.NumeroParcelas, orcamento.Total, codigo);
+            var resultPedido = Pedido.Criar(tenantId, id, orcamento.NumeroParcelas, orcamento.Valor, codigo);
 
             if (resultPedido.IsFailure)
                 return Result.Fail(resultPedido.Error);

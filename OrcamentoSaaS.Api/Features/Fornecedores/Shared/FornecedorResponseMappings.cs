@@ -5,24 +5,25 @@ namespace OrcamentoSaaS.Api.Features.Fornecedores.Shared;
 
 public static class FornecedorResponseMappings
 {
-    public static FornecedorResponse ToResponse(this Fornecedor fornecedor)
+    extension(Fornecedor fornecedor)
     {
-        return new FornecedorResponse(
-            fornecedor.Id,
-            fornecedor.Nome,
-            fornecedor.Cidade,
-            fornecedor.Uf,
-            fornecedor.Email,
-            fornecedor.Telefone,
-            fornecedor.Documento,
-            fornecedor.PorcentagemAVista,
-            fornecedor.PorcentagemAPrazo);
-    }
+        public FornecedorResponse ToResponse()
+        {
+            return new FornecedorResponse(
+                fornecedor.Id,
+                fornecedor.Nome,
+                fornecedor.Cidade,
+                fornecedor.Uf,
+                fornecedor.Email,
+                fornecedor.Telefone,
+                fornecedor.Documento);
+        }
 
-    public static FornecedorResumoResponse ToResumoResponse(this Fornecedor fornecedor)
-    {
-        return new FornecedorResumoResponse(
-            fornecedor.Id,
-            fornecedor.Nome);
+        public FornecedorResumoResponse ToResumoResponse()
+        {
+            return new FornecedorResumoResponse(
+                fornecedor.Id,
+                fornecedor.Nome);
+        }
     }
 }

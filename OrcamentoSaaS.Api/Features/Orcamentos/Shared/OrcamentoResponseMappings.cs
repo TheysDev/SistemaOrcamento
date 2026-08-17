@@ -14,12 +14,8 @@ public static class OrcamentoResponseMappings
             orcamento.Id,
             clienteResumo,
             fornecedorResumo,
-            itensResponse,
             orcamento.CodigoFormatado,
             orcamento.Validade,
-            orcamento.NumeroParcelas,
-            orcamento.Total,
-            orcamento.Desconto,
             orcamento.Status);
     }
 
@@ -29,8 +25,8 @@ public static class OrcamentoResponseMappings
             itemOrcamento.Id,
             itemOrcamento.Produto.Descricao,
             itemOrcamento.Quantidade,
-            itemOrcamento.Valor,
-            itemOrcamento.Desconto,
+            itemOrcamento.ValorItem,
+            itemOrcamento.DescontoItem,
             itemOrcamento.Total);
     }
 }

@@ -14,6 +14,7 @@ public class DeleteClienteHandler(AppDbContext db)
             return Result.Fail("Cliente não encontrado");
         
         var possuiOrcamentos = await db.Orcamentos
+            .AsNoTracking()
             .AnyAsync(o => o.ClienteId == id, ct);
 
         if (possuiOrcamentos)

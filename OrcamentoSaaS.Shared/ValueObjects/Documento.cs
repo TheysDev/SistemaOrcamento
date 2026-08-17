@@ -15,17 +15,20 @@ public sealed record Documento
 
     public static Result<Documento> Criar(string valor)
     {
+        if (string.IsNullOrWhiteSpace(valor))
+            return Result<Documento>.Fail("Documento obrigatório");
+        
         var documento = valor.ApenasNumeros();
         
-        if (string.IsNullOrWhiteSpace(documento))
-            return Result<Documento>.Fail("Documento obrigatório");
-
         if (Cpf.Validar(documento) || Cnpj.Validar(documento))
             return Result<Documento>.Success(
                 new Documento(documento));
 
         return Result<Documento>.Fail("CPF/CNPJ inválido");
     }
+
+    public static string Normalizar(string valor) => valor.ApenasNumeros();
+    
     
     public static implicit operator string(Documento documento) => documento.Valor;
     

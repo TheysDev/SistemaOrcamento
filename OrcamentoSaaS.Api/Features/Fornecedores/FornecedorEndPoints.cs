@@ -70,12 +70,11 @@ public static class FornecedorEndPoints
         });
         
         group.MapGet("/", async (
-            int pagina,
-            int tamanhoPagina,
-            GetAllFornecedoresHandler fornecedoresHandler,
+            [AsParameters] FornecedorQuery query,
+            GetBuscarFornecedoresHandler fornecedoresHandler,
             CancellationToken ct) =>
         {
-            var result = await fornecedoresHandler.Handle(pagina, tamanhoPagina, ct);
+            var result = await fornecedoresHandler.Handle(query, ct);
 
             return !result.IsSuccess
                 ? Results.NotFound(result.Error)

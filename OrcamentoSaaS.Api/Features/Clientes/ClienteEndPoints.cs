@@ -69,12 +69,11 @@ public static class ClienteEndPoints
         });
         
         group.MapGet("/", async (
-            int pagina,
-            int tamanhoPagina,
-            GetAllClientesHandler clientesHandler,
+            [AsParameters] ClienteQuery query,
+            GetBuscarClientesHandler clientesHandler,
             CancellationToken ct) =>
         {
-            var result = await clientesHandler.Handle(pagina, tamanhoPagina, ct);
+            var result = await clientesHandler.Handle(query, ct);
 
             return !result.IsSuccess
                 ? Results.NotFound(result.Error)

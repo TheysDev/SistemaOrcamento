@@ -7,4 +7,5 @@ public sealed record OrcamentoEditCommand(
     Guid FornecedorId,
     DateOnly Validade,
     int NumeroParcelas,
+    string? Observacao,
     ICollection<ItemOrcamentoRequest> Itens);

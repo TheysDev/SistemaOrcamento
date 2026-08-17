@@ -14,6 +14,7 @@ public class DeleteFornecedorHandler(AppDbContext db)
             return Result.Fail("Fornecedor não encontrado");
         
         var possuiOrcamentos = await db.Orcamentos
+            .AsNoTracking()
             .AnyAsync(o => o.FornecedorId == id, ct);
 
         if (possuiOrcamentos)

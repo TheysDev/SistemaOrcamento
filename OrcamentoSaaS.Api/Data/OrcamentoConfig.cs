@@ -35,7 +35,7 @@ public class OrcamentoConfig : IEntityTypeConfiguration<Orcamento>
             .HasForeignKey(o => o.FornecedorId)
             .OnDelete(DeleteBehavior.Restrict);;
         
-        builder.Ignore(o => o.Total);
+        builder.Ignore(o => o.Valor);
         builder.Ignore(o => o.Desconto);
     }
 }

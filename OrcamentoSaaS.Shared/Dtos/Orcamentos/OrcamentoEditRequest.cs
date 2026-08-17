@@ -16,6 +16,9 @@ public sealed record OrcamentoEditRequest
     [Required(ErrorMessage = "Validade é obrigatória.")]
     [ValidadeDate (ErrorMessage = "A data de validade deve ser pelo menos 7 dias no futuro.")]
     public DateOnly Validade { get; set; }
+    
+    [MaxLength(1000, ErrorMessage = "Maximo de 1000 caracteres.")]
+    public string? Observacao { get; set; }
 
     [MinLength(1, ErrorMessage = "O orçamento deve possuir ao menos um item.")]
     public ICollection<ItemOrcamentoRequest> Itens { get; set; }
