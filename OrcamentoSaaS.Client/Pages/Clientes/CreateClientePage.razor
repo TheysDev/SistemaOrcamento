@@ -1,24 +1,45 @@
 ﻿@page "/clientes/novo"
 @using OrcamentoSaaS.Client.Componentes.Clientes
+@using OrcamentoSaaS.Shared.Dtos.Clientes
+@inject ClienteService ClienteService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
-<PageTitle>Novo Cliente</PageTitle>
+<MudText Typo="Typo.h5" Class="mb-4">Novo Cliente</MudText>
 
-<div class="container py-4">
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mb-3">@errorMessage</MudAlert>
+}
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<ClienteForm Model="_model" 
+             ButtonText="Salvar Cliente" 
+             IsLoading="_isLoading"
+             OnValidSubmit="SalvarAsync" 
+             OnCancel="@(() => Navigation.NavigateTo("/clientes/listar"))" />
+
+@code {
+    private ClienteCreateRequest _model = new();
+    private bool _isLoading;
+    private string? errorMessage;
+
+    private async Task SalvarAsync()
+    {
+        _isLoading = true;
+        errorMessage = null;
         
-        <h2>Novo Cliente</h2>
+        if(_model.Telefone is not null) 
+            _model.Telefone = new string(_model.Telefone!.Where(char.IsDigit).ToArray());
 
-        <NavLink class="btn btn-outline-secondary" href="/clientes">
-            Voltar
-        </NavLink>
-        
-    </div>
-    
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <ClienteForm />
-        </div>
-    </div>
-    
-</div>
+        var result = await ClienteService.CreateClienteAsync(_model);
+        if (!result.IsSuccess)
+        {
+            errorMessage = result.Error;
+            _isLoading = false;
+            return;
+        }
+
+        Snackbar.Add("Cliente cadastrado com sucesso!", Severity.Success);
+        Navigation.NavigateTo("/clientes/listar");
+    }
+}

@@ -11,11 +11,16 @@ public static class PaginacaoExtensions
             .Skip((pagina - 1) * tamanhoPagina)
             .Take(tamanhoPagina)
             .ToListAsync(ct);
-        
-        return new PaginacaoResponse<T>(
-            itens,
-            pagina,
-            tamanhoPagina,
-            totalItens);
+
+        return new PaginacaoResponse<T>
+        {
+            Itens = itens,
+            Pagina = pagina,
+            TamanhoPagina = tamanhoPagina,
+            TotalItens = totalItens,
+            TotalPaginas = (int)Math.Ceiling(
+                totalItens / (double)tamanhoPagina)
+        };
+
     }
 }

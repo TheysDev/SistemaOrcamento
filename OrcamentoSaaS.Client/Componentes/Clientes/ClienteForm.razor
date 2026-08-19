@@ -1,52 +1,69 @@
-﻿@using OrcamentoSaaS.Shared.Dtos.Clientes
-@inject ClienteService ClienteService
-@inject NavigationManager NavigationManager
+﻿@using OrcamentoSaaS.Shared
+@using OrcamentoSaaS.Shared.Dtos.Clientes
 
-<EditForm Model="Model" OnValidSubmit="Submit">
-    <DataAnnotationsValidator/>
-    <ValidationSummary/>
-    <div class="row mb-3">
-        <label for="inputNome" class="col-sm-2 col-form-label">Nome</label>
-        <div class="col-sm-10">
-            <InputText class="form-control" @bind-Value="Model!.Nome" id="inputNome"/>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <label for="inputCidade" class="col-sm-2 col-form-label">Cidade</label>
-        <div class="col-sm-10">
-            <InputText class="form-control" @bind-Value="Model.Cidade" id="inputCidade"/>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <label for="inputUf" class="col-sm-2 col-form-label">UF</label>
-        <div class="col-sm-10">
-            <InputText class="form-control" @bind-Value="Model.Uf" id="inputUf"/>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-        <div class="col-sm-10">
-            <InputText type="email" class="form-control" @bind-Value="Model.Email" id="inputEmail"/>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <label for="inputDocumento" class="col-sm-2 col-form-label">CNPJ/CPF</label>
-        <div class="col-sm-10">
-            <InputText class="form-control" @bind-Value="Model.Documento" id="inputDocumento"/>
-        </div>
-    </div>
+<MudForm @ref="_form" @bind-IsValid="@_isValid">
+    <MudGrid Spacing="2">
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="Model.Nome" Label="Nome" Variant="Variant.Outlined" Margin="Margin.Dense" For="@(() => Model.Nome)" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="Model.Cidade" Label="Cidade" Variant="Variant.Outlined" Margin="Margin.Dense" For="@(() => Model.Cidade)" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="Model.Uf" Label="UF" Variant="Variant.Outlined" Margin="Margin.Dense" For="@(() => Model.Uf)" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="Model.Email" Label="E-mail" Variant="Variant.Outlined" Margin="Margin.Dense" For="@(() => Model.Email)" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="Model.Telefone" 
+                          Label="Telefone" 
+                          Variant="Variant.Outlined" 
+                          Margin="Margin.Dense" 
+                          Mask="@(new PatternMask("(00) 00000-0000"))" 
+                          For="@(() => Model.Telefone)" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudTextField @bind-Value="Model.Documento" 
+                          Label="Documento (CPF/CNPJ)" 
+                          Variant="Variant.Outlined"
+                          Disabled="@IsEditMode"
+                          HelperText="@(IsEditMode ? "O documento não pode ser alterado." : "")"
+                          Margin="Margin.Dense" 
+                          Mask="@(new PatternMask("00.000.000/0000-00"))" 
+                          For="@(() => Model.Documento)" />
+        </MudItem>
 
-    <button type="submit" class="btn btn-primary">Cadastrar</button>
-</EditForm>
+        <MudItem xs="12">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Filled" OnClick="OnCancel">Voltar</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SubmitAsync" Disabled="@IsLoading">
+                    @(IsLoading ? "Salvando..." : ButtonText)
+                </MudButton>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudForm>
 
-@code{
+@code {
+    [Parameter, EditorRequired] public ClienteBaseRequest Model { get; set; } = default!;
     
-    private ClienteCreateRequest? Model { get; set; } = new();
+    [Parameter] public bool IsEditMode { get; set; } = false;
     
-    private async Task Submit()
+    [Parameter] public string ButtonText { get; set; } = "Salvar";
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private MudForm _form = null!;
+    private bool _isValid;
+
+    private async Task SubmitAsync()
     {
-        if (Model != null) await ClienteService.CreateClienteAsync(Model)!;
-        
-        NavigationManager.NavigateTo("/");
+        await _form.ValidateAsync();
+        if (_form.IsValid)
+        {
+            await OnValidSubmit.InvokeAsync();
+        }
     }
 }

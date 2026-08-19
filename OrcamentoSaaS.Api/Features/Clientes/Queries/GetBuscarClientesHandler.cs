@@ -14,12 +14,21 @@ public class GetBuscarClientesHandler(AppDbContext db)
         {
             var busca = query.Busca.Trim();
 
-            var documento = Documento.Normalizar(busca);
+            var documentoResult = Documento.Criar(busca);
             
-            consulta = consulta.Where(c =>
-                c.Nome.Contains(busca) ||
-                (!string.IsNullOrEmpty(documento) &&
-                 c.Documento.Valor == documento));
+            if (documentoResult.IsSuccess)
+            {
+                var documento = documentoResult.Value;
+
+                consulta = consulta.Where(c =>
+                    c.Nome.Contains(busca) ||
+                    c.Documento == documento);
+            }
+            else
+            {
+                consulta = consulta.Where(c =>
+                    c.Nome.Contains(busca));
+            }
         }
 
         var clientesPaginados = await consulta

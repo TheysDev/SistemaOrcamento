@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor.Services;
 using OrcamentoSaaS.Client;
 using OrcamentoSaaS.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 var apiUrl = builder.Configuration["ApiUrl"];
+
+builder.Services.AddMudServices();
 
 builder.Services.AddHttpClient(
     "Api",

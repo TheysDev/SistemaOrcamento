@@ -26,7 +26,7 @@ public class CreateClienteHandler(AppDbContext db)
         if (cliente is not null)
         {
             if (cliente.IsActive) 
-                return Result<ClienteResponse>.Fail("Já existe Cliente cadastrado com esse CPF/CNPJ");
+                return Result<ClienteResponse>.Fail("Já existe cliente cadastrado com esse CPF/CNPJ");
             
             cliente.Ativar();
             cliente.EditarDados(

@@ -10,14 +10,5 @@ public record PaginacaoResponse<T>
     
     public bool ProximaPagina => Pagina < TotalPaginas;
     public bool PaginaAnterior => Pagina > 1;
-
-    public PaginacaoResponse(IList<T> itens, int pagina, int tamanhoPagina, int totalItens)
-    {
-        Itens = itens;
-        Pagina = pagina;
-        TamanhoPagina = tamanhoPagina;
-        TotalItens = totalItens;
-        TotalPaginas = (int)Math.Ceiling(totalItens / (double)tamanhoPagina);
-    }
     
 }

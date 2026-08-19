@@ -1,0 +1,111 @@
+﻿@page "/clientes/editar/{Id:guid}"
+@using OrcamentoSaaS.Client.Componentes.Clientes
+@using OrcamentoSaaS.Shared.Dtos.Clientes
+@inject ClienteService ClienteService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+@implements IDisposable
+
+<MudText Typo="Typo.h5" Class="mb-4">Editar Cliente</MudText>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mb-3">@errorMessage</MudAlert>
+}
+
+@if (_isCarregando)
+{
+    <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+}
+else if (_model != null)
+{
+    <ClienteForm Model="_model"
+                 IsEditMode="true"
+                 ButtonText="Editar Cliente" 
+                 IsLoading="_isLoading"
+                 OnValidSubmit="AtualizarAsync" 
+                 OnCancel="@(() => Navigation.NavigateTo("/clientes/listar"))" />
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private ClienteEditRequest? _model;
+    private bool _isCarregando = true;
+    private bool _isLoading;
+    private string? errorMessage;
+    
+    private readonly CancellationTokenSource _cts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await ClienteService.GetByIdAsync(Id, _cts.Token);
+
+            if (result is { IsSuccess: true, Value: not null })
+            {
+                _model = new ClienteEditRequest
+                {
+                    Nome = result.Value.Nome,
+                    Cidade = result.Value.Cidade,
+                    Uf = result.Value.Uf,
+                    Email = result.Value.Email,
+                    Telefone = result.Value.Telefone,
+                    Documento =  result.Value.Documento
+                };
+            }
+            else
+            {
+                errorMessage = result.Error ?? "Cliente não encontrado.";
+            }
+        }
+        catch (OperationCanceledException)
+        {}
+        finally 
+        {
+            _isCarregando = false;
+        }
+    }
+
+    private async Task AtualizarAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            errorMessage = null;
+        
+            if(_model.Telefone is not null) 
+                _model.Telefone = new string(_model.Telefone!.Where(char.IsDigit).ToArray());
+
+            var result = await ClienteService.EditarClienteAsync(Id, _model!);
+        
+            if (!result.IsSuccess)
+            {
+                errorMessage = result.Error;
+                _isLoading = false;
+                return;
+            }
+
+            Snackbar.Add("Cliente atualizado com sucesso!", Severity.Success);
+            Navigation.NavigateTo("/clientes/listar");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Ocorreu um erro inesperado: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+        
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+
+}

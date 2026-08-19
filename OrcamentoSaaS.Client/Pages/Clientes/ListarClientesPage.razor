@@ -1,0 +1,148 @@
+﻿@page "/clientes/listar"
+
+@using OrcamentoSaaS.Shared.Dtos.Clientes
+@using OrcamentoSaaS.Shared.Extensions
+
+@inject ClienteService ClienteService
+
+<PageTitle>Clientes</PageTitle>
+
+<MudTable T="ClienteResponse"
+          ServerData="LoadServerData"
+          Hover="true"
+          Dense="true"
+          Striped="false"
+          @ref="_table">
+
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Clientes</MudText>
+
+        <MudSpacer />
+
+        <MudTextField @bind-Value="_search"
+                      Placeholder="Pesquisar cliente..."
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Immediate="true"
+                      OnKeyDown="OnSearchKeyDown"
+                      Class="mt-0" />
+
+        <MudIconButton Icon="@Icons.Material.Filled.Search"
+                       Color="Color.Primary"
+                       OnClick="PesquisarAsync" />
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Nome</MudTh>
+        <MudTh>Cidade</MudTh>
+        <MudTh>UF</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Telefone</MudTh>
+        <MudTh>Documento</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Nome">
+            @context.Nome
+        </MudTd>
+
+        <MudTd DataLabel="Cidade">
+            @context.Cidade
+        </MudTd>
+
+        <MudTd DataLabel="UF">
+            @context.Uf
+        </MudTd>
+
+        <MudTd DataLabel="Email">
+            @context.Email
+        </MudTd>
+
+        <MudTd DataLabel="Telefone">
+            @context.Telefone
+        </MudTd>
+
+        <MudTd DataLabel="Documento">
+            @context.Documento
+        </MudTd>
+        <MudTd DataLabel="Ações">
+            <MudIconButton Href="@($"/clientes/editar/{context.Id}")" Icon="@Icons.Material.Filled.Edit" aria-label="editar" Size="Size.Small"/>
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                           OnClick="@(() => OnButtonClicked(@context.Id))" 
+                           aria-label="delete" 
+                           Size="Size.Small"/>
+        </MudTd>
+    </RowTemplate>
+
+    <NoRecordsContent>
+        <MudText>Nenhum cliente encontrado.</MudText>
+    </NoRecordsContent>
+
+    <LoadingContent>
+        <MudText>Carregando clientes...</MudText>
+    </LoadingContent>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="[10, 20, 50]" />
+    </PagerContent>
+
+</MudTable>
+
+@code {
+
+    [Inject] private IDialogService? DialogService { get; set; }
+    
+    private MudTable<ClienteResponse>? _table;
+
+    private string _search = string.Empty;
+
+    private async Task<TableData<ClienteResponse>> LoadServerData(
+        TableState state,
+        CancellationToken cancellationToken)
+    {
+        var pagina = state.Page + 1;
+        var tamanhoPagina = state.PageSize;
+
+        var query = new ClienteQuery(
+            Pagina: pagina,
+            TamanhoPagina: tamanhoPagina,
+            Busca: _search);
+
+        var response = await ClienteService.BuscarClientesAsync(
+            query,
+            cancellationToken);
+
+        return new TableData<ClienteResponse>
+        {
+            Items = response?.Itens ?? [],
+            TotalItems = response?.TotalItens ?? 0
+        };
+    }
+
+    private async Task PesquisarAsync()
+    {
+        if (_table is not null)
+            await _table.ReloadServerData();
+    }
+
+    private async Task OnSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            await PesquisarAsync();
+    }
+    
+    private async Task OnButtonClicked(Guid id)
+    {
+        var result = await DialogService.ShowMessageBoxAsync(
+            "Delatar Cliente", 
+            $"Tem certeza que deseja deletar esse cliente?", 
+            yesText:"Deletar!", cancelText:"Cancelar");
+        
+        if(result != true)
+            return;
+        
+        await ClienteService.DeleteClienteAsync(id);
+        
+        await _table!.ReloadServerData();
+    }
+}
