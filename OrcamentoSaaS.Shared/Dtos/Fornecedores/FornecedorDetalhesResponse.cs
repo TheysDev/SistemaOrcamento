@@ -1,12 +1,18 @@
-﻿namespace OrcamentoSaaS.Shared.Dtos.Fornecedores;
+﻿using OrcamentoSaaS.Shared.Dtos.Orcamentos;
+using OrcamentoSaaS.Shared.Dtos.Pedidos;
+
+namespace OrcamentoSaaS.Shared.Dtos.Fornecedores;
 
 public record FornecedorDetalhesResponse(
     Guid Id,
-    string Nome, 
-    string Cidade, 
-    string Uf, 
-    string Email, 
-    string? Telefone, 
-    string Documento,
+    FornecedorResponse Fornecedor,
+    ICollection<OrcamentoResponse> Orcamentos,
+    ICollection<PedidosResponse> Pedidos,
     decimal PorcentagemAVista,
-    decimal PorcentagemAPrazo);
+    decimal PorcentagemAPrazo,
+    int TotalOrcamentos,
+    int TotalOrcamentosAprovados,
+    int TotalOrcamentosRejeitados,
+    int TotalOrcamentosCancelados,
+    int TotalPedidos,
+    decimal PedidosValorTotal);

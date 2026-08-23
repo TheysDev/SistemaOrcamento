@@ -1,0 +1,53 @@
+﻿@page "/cliente/novo"
+@using OrcamentoSaaS.Client.Componentes.Cliente
+@using OrcamentoSaaS.Shared.Dtos.Clientes
+@inject ClienteService ClienteService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<ClienteForm Model="_model" 
+             ButtonText="Salvar Cliente"
+             TitleText="Novo Cliente"
+             IsLoading="_isLoading"
+             ErrorMenssage="@_errorMessage"
+             OnValidSubmit="SalvarAsync" 
+             OnCancel="@(() => Navigation.NavigateTo("/cliente/listar"))" />
+
+@code {
+    private readonly ClienteCreateRequest _model = new();
+    private bool _isLoading;
+    private string? _errorMessage;
+
+    private async Task SalvarAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        
+        if(_model.Telefone is not null) 
+            _model.Telefone = new string(_model.Telefone!.Where(char.IsDigit).ToArray());
+        try
+        {
+            var result = await ClienteService.CreateClienteAsync(_model);
+
+            if (!result.IsSuccess)
+            {
+                _errorMessage = result.Error;
+                _isLoading = false;
+                return;
+            }
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao Salvar Cliente", Severity.Error);
+
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+        
+        Snackbar.Add("Cliente cadastrado com sucesso!", Severity.Success);
+        
+        Navigation.NavigateTo("/cliente/novo");
+    }
+}

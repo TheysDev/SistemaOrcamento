@@ -7,4 +7,6 @@ public record FornecedorResponse(
     string Uf, 
     string Email, 
     string? Telefone, 
-    string Documento);
+    string Documento,
+    decimal PorcentagemAVista,
+    decimal PorcentagemAPrazo);

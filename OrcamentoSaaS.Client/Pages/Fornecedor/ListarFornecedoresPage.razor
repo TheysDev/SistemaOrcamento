@@ -1,0 +1,247 @@
+﻿@page "/fornecedor/listar"
+
+@using OrcamentoSaaS.Shared.Dtos.Fornecedores
+
+@inject ISnackbar Snackbar
+@inject FornecedorService FornecedorService
+
+@implements IDisposable
+
+<PageTitle>Fornecedores</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
+    <MudCard Elevation="3" Class="rounded-lg">
+        <MudTable T="FornecedorResponse"
+                  ServerData="LoadServerData"
+                  Hover="true"
+                  Dense="false"
+                  Elevation="0"
+                  @ref="_table">
+
+            <ToolBarContent>
+                <div class="d-flex align-center gap-3">
+                    <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">
+                        <MudIcon Icon="@Icons.Material.Filled.Store" />
+                    </MudAvatar>
+                    <div>
+                        <MudText Typo="Typo.h6" Class="font-weight-bold">Fornecedores</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Gerencie parceiros comerciais</MudText>
+                    </div>
+                </div>
+
+                <MudSpacer />
+
+                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                    <MudTextField @bind-Value="_search"
+                                  Placeholder="Buscar fornecedor ou CNPJ..."
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Medium"
+                                  Clearable="true"
+                                  OnClearButtonClick="PesquisarAsync"
+                                  OnKeyDown="OnSearchKeyDown"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Style="min-width: 280px;"
+                                  Class="mt-0" />
+                </MudStack>
+            </ToolBarContent>
+
+            <HeaderContent>
+                <MudTh>Razão Social</MudTh>
+                <MudTh>Documento</MudTh>
+                <MudTh>Contato</MudTh>
+                <MudTh>Localização</MudTh>
+                <MudTh Style="text-align: center;">Ações</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Razão Social">
+                    <div class="d-flex align-center gap-2">
+                        <MudAvatar Color="Color.Primary" Variant="Variant.Outlined" Size="Size.Small">
+                            @context.Nome.FirstOrDefault()
+                        </MudAvatar>
+                        <MudText Typo="Typo.body1" Class="fw-bold">@context.Nome</MudText>
+                    </div>
+                </MudTd>
+
+                <MudTd DataLabel="Documento">
+                    <MudText Typo="Typo.body1" Class="fw-bold">
+                        @FormatarDocumento(context.Documento)
+                    </MudText>
+                </MudTd>
+
+                <MudTd DataLabel="Contato">
+                    <div class="d-flex flex-column">
+                        <span class="d-flex align-center gap-1">
+                            <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Small" Color="Color.Secondary" Style="font-size: 0.9rem;" />
+                            <MudText Typo="Typo.body2">@context.Email</MudText>
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(context.Telefone))
+                        {
+                            <span class="d-flex align-center gap-1 mt-1">
+                                <MudIcon Icon="@Icons.Material.Filled.Phone" Size="Size.Small" Color="Color.Secondary" Style="font-size: 0.9rem;" />
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">@context.Telefone</MudText>
+                            </span>
+                        }
+                    </div>
+                </MudTd>
+
+                <MudTd DataLabel="Localização">
+                    @if (!string.IsNullOrWhiteSpace(context.Cidade))
+                    {
+                        <div class="d-flex align-center gap-1">
+                            <MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" Color="Color.Secondary" Style="font-size: 0.9rem;" />
+                            <MudText Typo="Typo.body2">@context.Cidade/@context.Uf</MudText>
+                        </div>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">-</MudText>
+                    }
+                </MudTd>
+                
+                <MudTd DataLabel="Ações">
+                    <MudStack Row="true" Spacing="1" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudTooltip Text="Detalhes">
+                            <MudIconButton Href="@($"/fornecedor/detalhes/{context.Id}")"
+                                           Icon="@Icons.Material.Outlined.Visibility"
+                                           Size="Size.Small"
+                                           Color="Color.Info" />
+                        </MudTooltip>
+
+                        <MudTooltip Text="Editar">
+                            <MudIconButton Href="@($"/fornecedor/editar/{context.Id}")"
+                                           Icon="@Icons.Material.Filled.Edit"
+                                           Size="Size.Small"
+                                           Color="Color.Primary" />
+                        </MudTooltip>
+
+                        <MudTooltip Text="Excluir">
+                            <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
+                                           Size="Size.Small"
+                                           Color="Color.Error" />
+                        </MudTooltip>
+                    </MudStack>
+                </MudTd>
+            </RowTemplate>
+
+            <NoRecordsContent>
+                <div class="pa-8 text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Secondary" />
+                    <MudText Typo="Typo.body1" Class="mt-2" Color="Color.Secondary">Nenhum fornecedor encontrado.</MudText>
+                </div>
+            </NoRecordsContent>
+
+            <LoadingContent>
+                <div class="pa-8 text-center">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+                    <MudText Typo="Typo.body2" Class="mt-2">Carregando fornecedores...</MudText>
+                </div>
+            </LoadingContent>
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="[10, 20, 50]" 
+                               RowsPerPageString="Linhas por página:" 
+                               InfoFormat="{first_item}-{last_item} de {all_items}" />
+            </PagerContent>
+        </MudTable>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private readonly CancellationTokenSource _cts = new();
+    
+    private MudTable<FornecedorResponse>? _table;
+    private string _search = string.Empty;
+
+    private static string FormatarDocumento(string? doc)
+    {
+        if (string.IsNullOrWhiteSpace(doc)) return "-";
+        var digitos = new string(doc.Where(char.IsDigit).ToArray());
+
+        return digitos.Length switch
+        {
+            11 => Convert.ToUInt64(digitos).ToString(@"000\.000\.000\-00"),
+            14 => Convert.ToUInt64(digitos).ToString(@"00\.000\.000\/0000\-00"),
+            _ => doc
+        };
+    }
+    
+    private async Task<TableData<FornecedorResponse>> LoadServerData(TableState state, CancellationToken ct)
+    {
+        var query = new FornecedorQuery(
+            Pagina: state.Page + 1,
+            TamanhoPagina: state.PageSize,
+            Busca: _search);
+
+        try
+        {
+            var response = await FornecedorService.BuscarFornecedoresAsync(query, ct);
+
+            return new TableData<FornecedorResponse>
+            {
+                Items = response?.Itens ?? [],
+                TotalItems = response?.TotalItens ?? 0
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            return new TableData<FornecedorResponse> { Items = [], TotalItems = 0 };
+        }
+        catch(Exception)
+        {
+            Snackbar.Add("Erro ao carregar fornecedores.", Severity.Error);
+            return new TableData<FornecedorResponse> { Items = [], TotalItems = 0 };
+        }
+    }
+    
+    private async Task PesquisarAsync()
+    {
+        if (_table is not null)
+            await _table.ReloadServerData();
+    }
+
+    private async Task OnSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            await PesquisarAsync();
+    }
+    
+    /*
+    private async Task DeleteFornecedorAsync(Guid id)
+    {
+        var parameters = new DialogParameters<ModalDeleteConfirmar>
+        {
+            { x => x.ContentText, "Tem certeza que deseja deletar este fornecedor? Esta ação não pode ser desfeita." },
+            { x => x.ButtonText, "Deletar" }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<ModalDeleteConfirmar>("Deletar Fornecedor", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var resultado = await FornecedorService.DeleteFornecedorAsync(id, _cts.Token);
+
+            if (resultado.IsSuccess)
+            {
+                Snackbar.Add("Fornecedor excluído com sucesso!", Severity.Success);
+                if (_table is not null)
+                    await _table.ReloadServerData();
+            }
+            else
+            {
+                Snackbar.Add(resultado.Error, Severity.Error);
+            }
+            
+        }
+    }
+    */
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

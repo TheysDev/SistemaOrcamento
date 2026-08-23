@@ -1,23 +1,80 @@
 ﻿@inherits LayoutComponentBase
 
 <MudLayout>
-    <MudDrawer Open="true"
-               Variant="DrawerVariant.Responsive"
-               Width="250px">
-        
+
+    <MudAppBar Elevation="1" Color="Color.Primary">
+
+        <MudIconButton 
+            Icon="@Icons.Material.Filled.Menu"
+            Color="Color.Inherit"
+            Edge="Edge.Start"
+            OnClick="DrawerToggle" />
+
+        <MudSpacer />
+
+        <MudIconButton 
+            Icon="@Icons.Material.Filled.MoreVert"
+            Color="Color.Inherit"
+            Edge="Edge.End" />
+
+    </MudAppBar>
+
+    <MudDrawer 
+        @bind-Open="_drawerOpen"
+        Elevation="2">
+
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h4" Class="mt-1">Orçamento</MudText>
+        </MudDrawerHeader>
+
         <NavMenu />
-        
+
     </MudDrawer>
-    
+
     <MudMainContent>
         @Body
     </MudMainContent>
-    
+
 </MudLayout>
 
-<MudThemeProvider/>
+
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="@_theme"/>
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
+@code{
+    private bool _isDarkMode = true;
 
+    private readonly MudTheme _theme = new()
+    {
+        Typography = new Typography()
+        {
+            H6 = new H6Typography()
+            {
+                FontFamily = ["Roboto", "Helvetica", "Arial", "sans-serif"],
+                FontSize = "1.25rem",
+                FontWeight = "500",
+                LineHeight = "1.6",
+                LetterSpacing = ".0075em"
+            },
+            
+            H5 =  new H5Typography()
+            {
+                FontFamily = ["Roboto", "Helvetica", "Arial", "sans-serif"],
+                FontSize = "1.25rem",
+                FontWeight = "500",
+                LineHeight = "1.6",
+                LetterSpacing = ".0075em"
+            }
+        }
+    };
+    
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+}

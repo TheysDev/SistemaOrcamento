@@ -91,6 +91,18 @@ public static class ClienteEndPoints
                 ? Results.NotFound(result.Error)
                 : Results.Ok(result.Value);
         });
+        
+        group.MapGet("/detalhes/{id:guid}", async (
+            Guid id,
+            GetClienteDetalhesHandler clientesHandler,
+            CancellationToken ct) =>
+        {
+            var result = await clientesHandler.Handle(id, ct);
+
+            return !result.IsSuccess
+                ? Results.NotFound(result.Error)
+                : Results.Ok(result.Value);
+        });
 
         return endpoints;
     }

@@ -68,13 +68,37 @@ public static class FornecedorEndPoints
                 ? Results.BadRequest(new { error = result.Error })
                 : Results.NoContent();
         });
-        
+
         group.MapGet("/", async (
             [AsParameters] FornecedorQuery query,
             GetBuscarFornecedoresHandler fornecedoresHandler,
             CancellationToken ct) =>
         {
             var result = await fornecedoresHandler.Handle(query, ct);
+
+            return !result.IsSuccess
+                ? Results.NotFound(result.Error)
+                : Results.Ok(result.Value);
+        });
+        
+        group.MapGet("/{id:guid}", async (
+            Guid id,
+            GetFornecedorByIdHandler fornecedorHandler,
+            CancellationToken ct) =>
+        {
+            var result = await fornecedorHandler.Handle(id, ct);
+
+            return !result.IsSuccess
+                ? Results.NotFound(result.Error)
+                : Results.Ok(result.Value);
+        });
+        
+        group.MapGet("/detalhes/{id:guid}", async (
+            Guid id,
+            GetFornecedorDetalhesHandler fornecedorHandler,
+            CancellationToken ct) =>
+        {
+            var result = await fornecedorHandler.Handle(id, ct);
 
             return !result.IsSuccess
                 ? Results.NotFound(result.Error)

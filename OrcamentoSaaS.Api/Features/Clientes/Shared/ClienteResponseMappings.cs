@@ -5,22 +5,25 @@ namespace OrcamentoSaaS.Api.Features.Clientes.Shared;
 
 public static class ClienteResponseMappings
 {
-    public static ClienteResponse ToResponse(this Cliente cliente)
+    extension(Cliente cliente)
     {
-        return new ClienteResponse(
-            cliente.Id,
-            cliente.Nome,
-            cliente.Cidade,
-            cliente.Uf,
-            cliente.Email,
-            cliente.Telefone,
-            cliente.Documento);
-    }
+        public ClienteResponse ToResponse()
+        {
+            return new ClienteResponse(
+                cliente.Id,
+                cliente.Nome,
+                cliente.Cidade,
+                cliente.Uf,
+                cliente.Email,
+                cliente.Telefone,
+                cliente.Documento);
+        }
 
-    public static ClienteResumoResponse ToResumoResponse(this Cliente cliente)
-    {
-        return new ClienteResumoResponse(
-            cliente.Id,
-            cliente.Nome);
+        public ClienteResumoResponse ToResumoResponse()
+        {
+            return new ClienteResumoResponse(
+                cliente.Id,
+                cliente.Nome);
+        }
     }
 }

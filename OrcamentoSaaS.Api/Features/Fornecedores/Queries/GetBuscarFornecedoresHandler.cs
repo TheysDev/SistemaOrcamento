@@ -31,7 +31,9 @@ public class GetBuscarFornecedoresHandler(AppDbContext db)
                 f.Uf,
                 f.Email,
                 f.Telefone,
-                f.Documento))
+                f.Documento,
+                f.PorcentagemAVista,
+                f.PorcentagemAPrazo))
             .PaginarAsync(query.Pagina, query.TamanhoPagina, ct);
 
         return Result<PaginacaoResponse<FornecedorResponse>>

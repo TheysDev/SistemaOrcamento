@@ -16,7 +16,9 @@ public static class FornecedorResponseMappings
                 fornecedor.Uf,
                 fornecedor.Email,
                 fornecedor.Telefone,
-                fornecedor.Documento);
+                fornecedor.Documento,
+                fornecedor.PorcentagemAVista,
+                fornecedor.PorcentagemAPrazo);
         }
 
         public FornecedorResumoResponse ToResumoResponse()

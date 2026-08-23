@@ -1,0 +1,67 @@
+﻿<MudCard Elevation="2" Class="h-100 w-100 d-flex flex-column" Style="width: 100%;">
+    
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Resumo Operacional</MudText>
+        </CardHeaderContent>
+
+        <CardHeaderActions>
+            <MudIcon Icon="@Icons.Material.Filled.Analytics" Color="Color.Primary"/>
+        </CardHeaderActions>
+    </MudCardHeader>
+    
+    <MudDivider />
+    
+    <MudCardContent Class="flex-grow-1">
+        
+        <MudGrid Class="mb-3">
+            
+            <MudItem xs="6">
+                <MudPaper Elevation="0" Class="pa-3 rounded" Style="background-color: rgba(255,255,255,0.04);">
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">TOTAL EM PEDIDOS</MudText>
+                    <MudText Typo="Typo.h6" Color="Color.Primary">
+                        @PedidosValorTotal.ToString("C2", new System.Globalization.CultureInfo("pt-BR"))
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+            
+            <MudItem xs="6">
+                <MudPaper Elevation="0" Class="pa-3 rounded" Style="background-color: rgba(255,255,255,0.04);">
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">QUANTIDADE DE PEDIDOS</MudText>
+                    <MudText Typo="Typo.h6">@TotalPedidos</MudText>
+                </MudPaper>
+            </MudItem>
+            
+        </MudGrid>
+
+        <MudDivider Class="my-3"/>
+
+        <MudText Typo="Typo.subtitle2" Class="mud-text-secondary mb-2">Orçamentos Emitidos (<b>@TotalOrcamentos</b> Total)</MudText>
+
+        <div class="d-flex flex-wrap gap-2">
+
+            <MudChip T="string" Color="Color.Success" Variant="Variant.Filled" Size="Size.Medium" Icon="@Icons.Material.Filled.CheckCircle">
+                Aprovados: @TotalOrcamentosAprovados
+            </MudChip>
+
+            <MudChip T="string" Color="Color.Error" Variant="Variant.Filled" Size="Size.Medium" Icon="@Icons.Material.Filled.Cancel">
+                Rejeitados: @TotalOrcamentosRejeitados
+            </MudChip>
+
+            <MudChip T="string" Color="Color.Default" Variant="Variant.Filled" Size="Size.Medium" Icon="@Icons.Material.Filled.Block">
+                Cancelados: @TotalOrcamentosCancelados
+            </MudChip>
+
+        </div>
+
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public int TotalOrcamentos { get; set; }
+    [Parameter] public int TotalOrcamentosAprovados { get; set; }
+    [Parameter] public int TotalOrcamentosRejeitados { get; set; }
+    [Parameter] public int TotalOrcamentosCancelados { get; set; }
+    [Parameter] public int TotalPedidos { get; set; }
+    [Parameter] public decimal PedidosValorTotal { get; set; }
+}

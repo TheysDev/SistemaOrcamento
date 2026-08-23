@@ -13,6 +13,7 @@ public static class FornecedorBuilderExtension
         
         builder.Services.AddScoped<GetBuscarFornecedoresHandler>();
         builder.Services.AddScoped<GetFornecedorDetalhesHandler>();
+        builder.Services.AddScoped<GetFornecedorByIdHandler>();
         
         return builder;
     }

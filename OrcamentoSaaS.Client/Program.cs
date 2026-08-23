@@ -8,7 +8,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 var apiUrl = builder.Configuration["ApiUrl"];
 
-builder.Services.AddMudServices();
+
 
 builder.Services.AddHttpClient(
     "Api",
@@ -19,6 +19,10 @@ builder.Services.AddHttpClient(
     });
 
 builder.Services.AddScoped<ClienteService>();
+builder.Services.AddScoped<FornecedorService>();
+
+
+builder.Services.AddMudServices();
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");

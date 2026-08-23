@@ -10,6 +10,11 @@ public class PedidoConfig : IEntityTypeConfiguration<Pedido>
         
         builder.HasKey(p => p.Id);
         builder.HasIndex(o => new {o.TenantId, o.Codigo}).IsUnique();
+        
+        builder.HasIndex(p => new { p.TenantId, p.OrcamentoId, p.IsActive, p.Codigo })
+            .HasDatabaseName("IX_Pedidos_Tenant_Orcamento_Codigo")
+            .IsDescending(false, false, false, true)
+            .IncludeProperties(p => new { p.Data, p.Status, p.ValorTotal });
 
         builder.Property(p => p.TenantId).IsRequired();
         builder.Property(p => p.Codigo).IsRequired();

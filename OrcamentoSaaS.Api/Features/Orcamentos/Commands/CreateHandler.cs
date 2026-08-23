@@ -95,7 +95,7 @@ public class CreateHandler(AppDbContext db)
         }
         catch (Exception)
         {
-            await transaction.RollbackAsync(ct);
+            Console.WriteLine("Erro ao criar");
             throw;
         }
     }

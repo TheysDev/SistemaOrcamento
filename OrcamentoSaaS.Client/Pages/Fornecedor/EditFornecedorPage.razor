@@ -1,0 +1,100 @@
+﻿@page "/fornecedor/editar/{id:guid}"
+
+@using OrcamentoSaaS.Client.Componentes.Fornecedor
+@using OrcamentoSaaS.Shared.Dtos.Fornecedores
+
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject FornecedorService FornecedorService
+
+@implements IDisposable
+
+
+<FornecedorForm Model="_model"
+                TitleText="Editar Fornecedor"
+                ButtonText="Editar Fornecedor"
+                IsEditMode="true"
+                IsLoading="_isLoading"
+                ErrorMenssage="@_errorMessage"
+                OnValidSubmit="AtualizarAsync"
+                OnCancel="Voltar" />
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    
+    private FornecedorEditRequest _model = new();
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    private readonly CancellationTokenSource _cts = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await FornecedorService.BuscarFornecedorByIdAsync(Id, _cts.Token);
+
+            if (result is { IsSuccess: true, Value: not null })
+            {
+                _model = new FornecedorEditRequest
+                {
+                    Nome = result.Value.Nome,
+                    Cidade = result.Value.Cidade,
+                    Uf = result.Value.Uf,
+                    Email = result.Value.Email,
+                    Telefone = result.Value.Telefone,
+                    Documento =  result.Value.Documento,
+                    PorcentagemAVista =  result.Value.PorcentagemAVista,
+                    PorcentagemAPrazo =  result.Value.PorcentagemAPrazo
+                };
+            }
+            else
+            {
+                _errorMessage = result.Error ?? "Cliente não encontrado.";
+            }
+        }
+        catch (OperationCanceledException)
+        {}
+        finally 
+        {
+            _isLoading = false;
+        }
+    }
+    
+
+    private async Task AtualizarAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            // Exemplo de chamada HTTP/Service:
+            // var response = await FornecedorService.CreateAsync(_model);
+            
+            await Task.Delay(500); // Simulação de requisição
+            
+            Snackbar.Add("Fornecedor cadastrado com sucesso!", Severity.Success);
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao cadastrar fornecedor", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void Voltar()
+    {
+        Navigation.NavigateTo("/fornecedor/listar");
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+
+}

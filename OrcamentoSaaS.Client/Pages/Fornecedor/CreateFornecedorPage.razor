@@ -1,0 +1,60 @@
+﻿@page "/fornecedor/novo"
+@using OrcamentoSaaS.Client.Componentes.Fornecedor
+@using OrcamentoSaaS.Shared.Dtos.Fornecedores
+
+@inject FornecedorService FornecedorService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+
+<FornecedorForm Model="_model"
+                TitleText="Novo Fornecedor"
+                ButtonText="Cadastrar"
+                IsEditMode="false"
+                IsLoading="_isLoading"
+                ErrorMenssage="@_errorMessage"
+                OnValidSubmit="SalvarFornecedor"
+                OnCancel="Voltar" />
+
+@code {
+    private readonly FornecedorCreateRequest _model = new();
+    private bool _isLoading;
+    private string? _errorMessage;
+
+    private async Task SalvarFornecedor()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        
+        if(_model.Telefone is not null) 
+            _model.Telefone = new string(_model.Telefone!.Where(char.IsDigit).ToArray());
+        try
+        {
+            var result = await FornecedorService.CreateFornecedorAsync(_model);
+            
+            if (!result.IsSuccess)
+            {
+                _errorMessage = result.Error;
+                _isLoading = false;
+                return;
+            }
+            
+            Snackbar.Add("Fornecedor cadastrado com sucesso!", Severity.Success);
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao Salvar Fornecedor", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+        
+        Navigation.NavigateTo("/fornecedor/novo");
+    }
+
+    private void Voltar()
+    {
+        Navigation.NavigateTo("/fornecedor/listar");
+    }
+}

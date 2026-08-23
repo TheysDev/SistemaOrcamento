@@ -1,0 +1,123 @@
+﻿@page "/cliente/detalhes/{Id:guid}"
+
+@using OrcamentoSaaS.Client.Componentes.Cliente
+@using OrcamentoSaaS.Shared.Dtos.Clientes
+
+@inject NavigationManager Navigation
+@inject ClienteService ClienteService
+@inject ISnackbar Snackbar
+
+@implements IDisposable
+
+<PageTitle>Detalhes do Cliente</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-6">
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="mb-4" ShowCloseIcon="true">
+            @_errorMessage
+        </MudAlert>
+    }
+
+    @if (_isCarregando)
+    {
+        <div class="d-flex flex-column align-center justify-center my-12">
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" />
+            <MudText Typo="Typo.body2" Class="mt-3" Color="Color.Secondary">Carregando detalhes do cliente...</MudText>
+        </div>
+    }
+    else if (_model is not null)
+    {
+        <div class="d-flex align-center justify-space-between mb-4">
+            <div class="d-flex align-center gap-3">
+                <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Large">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" />
+                </MudAvatar>
+                <div>
+                    <MudText Typo="Typo.h5" Class="font-weight-bold">@_model.Clientes.Nome</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Visão geral, métricas e histórico comercial</MudText>
+                </div>
+            </div>
+
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Default"
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       OnClick="Voltar">
+                Voltar
+            </MudButton>
+        </div>
+
+        <MudGrid Spacing="4">
+            <MudItem xs="12" sm="6" Class="d-flex">
+                <CardDadosCliente Cliente="@_model.Clientes" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6" Class="d-flex">
+                <CardInfoCliente TotalOrcamentos="@_model.TotalOrcamentos"
+                                 TotalOrcamentosAprovados="@_model.TotalOrcamentosAprovados"
+                                 TotalOrcamentosCancelados="@_model.TotalOrcamentosCancelados"
+                                 TotalOrcamentosRejeitados="@_model.TotalOrcamentosRejeitados"
+                                 TotalPedidos="@_model.TotalPedidos"
+                                 PedidosValorTotal="@_model.PedidosValorTotal" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <CardListaOrcamentosCliente ClienteId="@_model.Id"
+                                     Orcamentos="@_model.Orcamentos" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <CardListaPedidosCliente ClienteId="@_model.Id"
+                                  Pedidos="@_model.Pedidos" />
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private ClienteDetalhesResponse? _model;
+    private readonly CancellationTokenSource _cts = new();
+    private bool _isCarregando = true;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await ClienteService.BuscarClienteDetalhesAsync(Id, _cts.Token);
+
+            if (result.IsSuccess)
+            {
+                _model = result.Value;
+            }
+            else
+            {
+                _errorMessage = result.Error ?? "Cliente não encontrado.";
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao carregar dados do cliente", Severity.Error);
+        }
+        finally
+        {
+            _isCarregando = false;
+        }
+    }
+
+    private void Voltar()
+    {
+        Navigation.NavigateTo("/cliente/listar");
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

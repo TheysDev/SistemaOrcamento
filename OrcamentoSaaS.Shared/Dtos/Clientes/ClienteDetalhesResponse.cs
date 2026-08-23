@@ -1,10 +1,16 @@
-﻿namespace OrcamentoSaaS.Shared.Dtos.Clientes;
+﻿using OrcamentoSaaS.Shared.Dtos.Orcamentos;
+using OrcamentoSaaS.Shared.Dtos.Pedidos;
 
-public record ClienteDetalhesResponse(
+namespace OrcamentoSaaS.Shared.Dtos.Clientes;
+
+public sealed record ClienteDetalhesResponse(
     Guid Id,
-    string Nome,
-    string Cidade,
-    string Uf,
-    string Email,
-    string? Telefone,
-    string Documento);
+    ClienteResponse Clientes,
+    ICollection<OrcamentoResponse> Orcamentos,
+    ICollection<PedidosResponse> Pedidos, 
+    int TotalOrcamentos,
+    int TotalOrcamentosAprovados,
+    int TotalOrcamentosRejeitados,
+    int TotalOrcamentosCancelados,
+    int TotalPedidos,
+    decimal PedidosValorTotal);

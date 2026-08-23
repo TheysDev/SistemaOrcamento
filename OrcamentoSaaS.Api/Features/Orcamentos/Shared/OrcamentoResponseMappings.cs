@@ -23,7 +23,7 @@ public static class OrcamentoResponseMappings
     {
         return new ItemOrcamentoResponse(
             itemOrcamento.Id,
-            itemOrcamento.Produto.Descricao,
+            itemOrcamento.Produto?.Descricao ?? "Nome do Produto",
             itemOrcamento.Quantidade,
             itemOrcamento.ValorItem,
             itemOrcamento.DescontoItem,

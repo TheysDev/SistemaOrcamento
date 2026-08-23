@@ -365,7 +365,7 @@ namespace OrcamentoSaaS.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("Desconto")
+                    b.Property<decimal>("DescontoItem")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -384,7 +384,7 @@ namespace OrcamentoSaaS.Api.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("Valor")
+                    b.Property<decimal>("ValorItem")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -439,6 +439,12 @@ namespace OrcamentoSaaS.Api.Migrations
 
                     b.HasIndex("TenantId", "Codigo")
                         .IsUnique();
+
+                    b.HasIndex("TenantId", "ClienteId", "IsActive", "Codigo")
+                        .IsDescending(false, false, false, true)
+                        .HasDatabaseName("IX_Orcamento_Tenant_Cliente_Codigo");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TenantId", "ClienteId", "IsActive", "Codigo"), new[] { "Status", "Validade", "FornecedorId" });
 
                     b.ToTable("tb_Orcamento", null, t =>
                         {
@@ -513,6 +519,12 @@ namespace OrcamentoSaaS.Api.Migrations
 
                     b.HasIndex("TenantId", "Codigo")
                         .IsUnique();
+
+                    b.HasIndex("TenantId", "OrcamentoId", "IsActive", "Codigo")
+                        .IsDescending(false, false, false, true)
+                        .HasDatabaseName("IX_Pedidos_Tenant_Orcamento_Codigo");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TenantId", "OrcamentoId", "IsActive", "Codigo"), new[] { "Data", "Status", "ValorTotal" });
 
                     b.ToTable("tb_Pedidos", (string)null);
                 });

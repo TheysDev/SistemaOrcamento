@@ -1,15 +1,25 @@
 ﻿<MudNavMenu>
-    <MudText Typo="Typo.h6" Class="px-4">Sistema de Orçamento</MudText>
-    <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Jessica User</MudText>
-    <MudDivider Class="my-2"/>
-    <MudNavLink Href="/dashboard">Dashboard</MudNavLink>
-    <MudNavGroup Title="Clientes" Expanded="true">
-        <MudNavLink Href="/clientes/novo">Cadastrar Cliente</MudNavLink>
-        <MudNavLink Href="/clientes/listar">Lista de Clientes</MudNavLink>
-        </MudNavGroup>
-    <MudNavLink Href="/about" Class="disabled">Sair</MudNavLink>
-
-    </MudNavMenu>
+    <MudNavLink Href="/" Icon="@Icons.Material.Rounded.SpaceDashboard" IconColor="Color.Inherit" >Dashboard</MudNavLink>
+    <MudNavGroup Title="Orçamento" Icon="@Icons.Material.Filled.BarChart">
+        <MudNavLink Href="/orcamento/novo" Icon="@Icons.Material.Filled.AddCircle" IconColor="Color.Inherit">Cadastrar</MudNavLink>
+        <MudNavLink Href="/orcamento/listar" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Cliente" Icon="@Icons.Material.Rounded.Person">
+        <MudNavLink Href="/cliente/novo" Icon="@Icons.Material.Filled.AddCircle" IconColor="Color.Inherit">Cadastrar</MudNavLink>
+        <MudNavLink Href="/cliente/listar" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Fornecedor" Icon="@Icons.Material.Filled.HomeWork">
+        <MudNavLink Href="/fornecedor/novo" Icon="@Icons.Material.Filled.AddCircle" IconColor="Color.Inherit">Cadastrar</MudNavLink>
+        <MudNavLink Href="/fornecedor/listar" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Produto" Icon="@Icons.Material.Filled.ShoppingBag" >
+        <MudNavLink Href="/produto/novo" Icon="@Icons.Material.Filled.AddCircle" IconColor="Color.Inherit">Cadastrar</MudNavLink>
+        <MudNavLink Href="/produto/listar" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Pedido" Icon="@Icons.Material.Rounded.ShoppingCart">
+        <MudNavLink Href="/pedido/listar" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
+    </MudNavGroup>
+</MudNavMenu>
 
 
 

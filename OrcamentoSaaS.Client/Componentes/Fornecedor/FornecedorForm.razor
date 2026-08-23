@@ -1,0 +1,195 @@
+﻿@using OrcamentoSaaS.Shared.Dtos.Fornecedores
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="my-4">
+    <MudCard Elevation="3" Class="rounded-lg">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+                    <MudIcon Icon="@(IsEditMode ? Icons.Material.Filled.Edit : Icons.Material.Filled.PersonAdd)" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5" Class="font-weight-bold">@TitleText</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    @(IsEditMode ? "Atualize as informações do fornecedor selecionado." : "Preencha os campos abaixo para cadastrar um novo fornecedor.")
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudDivider />
+
+        <MudCardContent Class="pa-6">
+            @if (!string.IsNullOrEmpty(ErrorMenssage))
+            {
+                <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Class="mb-4" ShowCloseIcon="true">
+                    @ErrorMenssage
+                </MudAlert>
+            }
+
+            <MudForm @ref="_form" @bind-IsValid="@_isValid">
+                <MudGrid Spacing="3">
+                    
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1">
+                            <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> Dados Gerais
+                        </MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" md="8">
+                        <MudTextField @bind-Value="Model.Nome"
+                                      Label="Razão Social / Nome"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Badge"
+                                      For="@(() => Model.Nome)" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="Model.Documento"
+                                      Label="CPF / CNPJ"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
+                                      Disabled="@IsEditMode"
+                                      HelperText="@(IsEditMode ? "Não editável" : "")"
+                                      Mask="@(new PatternMask("00.000.000/0000-00"))"
+                                      For="@(() => Model.Documento)" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" Class="mt-2">
+                        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1">
+                            <MudIcon Icon="@Icons.Material.Filled.ContactMail" Size="Size.Small" /> Contato e Localização
+                        </MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Model.Email"
+                                      Label="E-mail"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Email"
+                                      For="@(() => Model.Email)" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudTextField @bind-Value="Model.Telefone"
+                                      Label="Telefone / Celular"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.Phone"
+                                      Mask="@(new PatternMask("(00) 00000-0000"))"
+                                      For="@(() => Model.Telefone)" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="8">
+                        <MudTextField @bind-Value="Model.Cidade"
+                                      Label="Cidade"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
+                                      Adornment="Adornment.Start"
+                                      AdornmentIcon="@Icons.Material.Filled.LocationCity"
+                                      For="@(() => Model.Cidade)" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="Model.Uf"
+                                      Label="UF"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
+                                      MaxLength="2"
+                                      For="@(() => Model.Uf)" />
+                    </MudItem>
+                    
+                    <MudItem xs="12" Class="mt-2">
+                        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1">
+                            <MudIcon Icon="@Icons.Material.Filled.Percent" Size="Size.Small" /> Condições Comerciais
+                        </MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudNumericField @bind-Value="Model.PorcentagemAVista"
+                                         Label="Margem / % À Vista"
+                                         Variant="Variant.Outlined"
+                                         Margin="Margin.Dense"
+                                         Format="N2"
+                                         Min="0.01m"
+                                         Adornment="Adornment.End"
+                                         AdornmentText="%"
+                                         For="@(() => Model.PorcentagemAVista)" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudNumericField @bind-Value="Model.PorcentagemAPrazo"
+                                         Label="Margem / % A Prazo"
+                                         Variant="Variant.Outlined"
+                                         Margin="Margin.Dense"
+                                         Format="N2"
+                                         Min="0.01m"
+                                         Adornment="Adornment.End"
+                                         AdornmentText="%"
+                                         For="@(() => Model.PorcentagemAPrazo)" />
+                    </MudItem>
+
+                </MudGrid>
+            </MudForm>
+        </MudCardContent>
+
+        <MudDivider />
+
+        <MudCardActions Class="pa-4 d-flex justify-space-between align-center">
+            <MudButton Variant="Variant.Text" 
+                       Color="Color.Secondary" 
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       OnClick="OnCancel" 
+                       Disabled="@IsLoading">
+                Voltar
+            </MudButton>
+
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       OnClick="SubmitAsync" 
+                       Disabled="@IsLoading"
+                       StartIcon="@(IsLoading ? null : Icons.Material.Filled.Save)">
+                @if (IsLoading)
+                {
+                    <MudProgressCircular Class="ms-n1 me-2" Size="Size.Small" Indeterminate="true" />
+                    <span>Salvando...</span>
+                }
+                else
+                {
+                    <span>@ButtonText</span>
+                }
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+    [Parameter, EditorRequired] public FornecedorBaseRequest Model { get; set; } = null!;
+    
+    [Parameter] public bool IsEditMode { get; set; } = false;
+    [Parameter] public bool IsLoading { get; set; }
+    
+    [Parameter] public string? ErrorMenssage { get; set; }
+    
+    [Parameter] public string ButtonText { get; set; } = "Salvar";
+    [Parameter] public string TitleText { get; set; } = "Fornecedor";
+
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private MudForm _form = null!;
+    private bool _isValid;
+
+    private async Task SubmitAsync()
+    {
+        await _form.ValidateAsync();
+        if (_form.IsValid)
+        {
+            await OnValidSubmit.InvokeAsync();
+            await _form.ResetAsync();
+        }
+    }
+}

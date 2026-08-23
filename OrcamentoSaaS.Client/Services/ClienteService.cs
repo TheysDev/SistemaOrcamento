@@ -10,9 +10,8 @@ namespace OrcamentoSaaS.Client.Services;
 public class ClienteService(IHttpClientFactory factory)
 {
     private readonly HttpClient _httpClient = factory.CreateClient("Api");
-
     
-    public async Task<Result<ClienteResponse>> CreateClienteAsync(ClienteCreateRequest req)
+    public async Task<Result<ClienteResponse>>CreateClienteAsync(ClienteCreateRequest req)
     {
         var response = await _httpClient.PostAsJsonAsync($"api/cliente", req);
 
@@ -28,7 +27,7 @@ public class ClienteService(IHttpClientFactory factory)
         return Result<ClienteResponse>.Success(data!);
     }
 
-    public async Task<PaginacaoResponse<ClienteResponse>?> BuscarClientesAsync(ClienteQuery query, CancellationToken ct)
+    public async Task<PaginacaoResponse<ClienteResponse>?>BuscarClientesAsync(ClienteQuery query, CancellationToken ct)
     {
         var url = $"api/cliente" +
                   $"?pagina={query.Pagina}" +
@@ -40,11 +39,18 @@ public class ClienteService(IHttpClientFactory factory)
               ?? new PaginacaoResponse<ClienteResponse>();
     }
     
-    public async Task<bool> DeleteClienteAsync(Guid id)
+    public async Task<Result> DeleteClienteAsync(Guid id, CancellationToken ct)
     {
-        var response = await _httpClient.DeleteAsync($"api/cliente/{id}");
+        var response = await _httpClient.DeleteAsync($"api/cliente/{id}", ct);
 
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode) 
+            return Result.Success();
+        
+        var errorBody = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken: ct);
+        var errorMessage = errorBody?.Error ?? "Ocorreu um erro ao processar a requisição.";
+
+        return Result<ClienteResponse>.Fail(errorMessage);
+
     }
 
     public async Task<Result<ClienteResponse>> GetByIdAsync(Guid id, CancellationToken ct)
@@ -75,5 +81,21 @@ public class ClienteService(IHttpClientFactory factory)
 
         return Result<ClienteResponse>.Fail(errorMessage);
 
+    }
+    
+    public async Task<Result<ClienteDetalhesResponse>> BuscarClienteDetalhesAsync(Guid id, CancellationToken ct)
+    {
+        var response = await _httpClient.GetAsync($"api/cliente/detalhes/{id}", ct);
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorBody = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken: ct);
+            var errorMessage = errorBody?.Error ?? "Ocorreu um erro ao processar a requisição.";
+
+            return Result<ClienteDetalhesResponse>.Fail(errorMessage);
+        }
+        
+        var data = await response.Content.ReadFromJsonAsync<ClienteDetalhesResponse>(cancellationToken: ct);
+        return Result<ClienteDetalhesResponse>.Success(data!);
     }
 }

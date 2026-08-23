@@ -1,0 +1,75 @@
+﻿@using OrcamentoSaaS.Shared.Dtos.Pedidos
+@inject NavigationManager Navigation
+
+<MudCard Elevation="3" Class="h-100 w-100 d-flex flex-column" Style="width: 100%;">
+    
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Últimos Pedidos</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Color="Color.Primary"/>
+        </CardHeaderActions>
+    </MudCardHeader>
+
+    <MudDivider/>
+
+    <MudCardContent Class="flex-grow-1 pa-0">
+        @if (!Pedidos.Any())
+        {
+            <div class="pa-6 text-center">
+                <MudIcon Icon="@Icons.Material.Filled.SearchOff" Color="Color.Default" Size="Size.Medium"/>
+                <MudText Typo="Typo.body2" Color="Color.Default" Class="mt-1">Nenhum pedido realizado com este fornecedor.</MudText>
+            </div>
+        }
+        else
+        {
+            <MudList T="PedidosResponse" Dense="true" Clickable="false">
+                @foreach (var pedido in Pedidos)
+                {
+                    <MudListItem Class="py-2 border-b">
+                        <div class="d-flex align-center justify-space-between w-100">
+                            <div>
+                                <div class="d-flex align-center gap-2">
+                                    <MudText Typo="Typo.subtitle2">@pedido.Codigo</MudText>
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Info" Variant="Variant.Outlined">
+                                        @pedido.StatusPedido
+                                    </MudChip>
+                                </div>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                                    Cliente: @pedido.Cliente.Nome | Data: @pedido.DataPedido.ToString("dd/MM/yyyy")
+                                </MudText>
+                            </div>
+
+                            <MudText Typo="Typo.subtitle2" Color="Color.Success" Class="fw-bold">
+                                @pedido.ValorTotal.ToString("C2", new System.Globalization.CultureInfo("pt-BR"))
+                            </MudText>
+                        </div>
+                        
+                    </MudListItem>
+                }
+            </MudList>
+        }
+    </MudCardContent>
+    
+    <MudDivider Class="my-0"/>
+    
+    <MudCardActions Class="justify-end pa-3">
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Primary"
+                   EndIcon="@Icons.Material.Filled.ArrowForward"
+                   OnClick="NavegarParaTodosPedidos">
+            Ver Todos
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter] public Guid FornecedorId { get; set; }
+    [Parameter] public ICollection<PedidosResponse> Pedidos { get; set; } = [];
+
+    private void NavegarParaTodosPedidos()
+    {
+        Navigation.NavigateTo($"/pedidos?fornecedorId={FornecedorId}");
+    }
+}

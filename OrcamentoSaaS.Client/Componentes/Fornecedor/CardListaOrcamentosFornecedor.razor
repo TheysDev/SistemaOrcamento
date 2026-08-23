@@ -1,0 +1,92 @@
+﻿@using OrcamentoSaaS.Shared.Dtos.Orcamentos
+@using OrcamentoSaaS.Shared.Enums
+@inject NavigationManager Navigation
+
+<MudCard Elevation="2" Class="h-100 w-100 d-flex flex-column" Style="width: 100%;">
+    
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Últimos Orçamentos</MudText>
+        </CardHeaderContent>
+
+        <CardHeaderActions>
+            <MudIcon Icon="@Icons.Material.Filled.RequestQuote" Color="Color.Primary"/>
+        </CardHeaderActions>
+    </MudCardHeader>
+
+    <MudDivider />
+
+    <MudCardContent Class="flex-grow-1 pa-0">
+        @if (!Orcamentos.Any())
+        {
+            <div class="pa-6 text-center">
+                <MudIcon Icon="@Icons.Material.Filled.SearchOff" Color="Color.Default" Size="Size.Medium" />
+                <MudText Typo="Typo.body2" Color="Color.Default" Class="mt-1">Nenhum orçamento cadastrado para este fornecedor.</MudText>
+            </div>
+        }
+        else
+        {
+            <MudList T="OrcamentoResponse" Dense="true" Clickable="false">
+                @foreach (var orcamento in Orcamentos)
+                {
+                    <MudListItem Class="py-2 border-b">
+                        <div class="d-flex align-center justify-space-between w-100">
+                            <div>
+                                <div class="d-flex align-center gap-2">
+                                    <MudText Typo="Typo.subtitle2">@orcamento.Codigo</MudText>
+                                    <MudChip T="string" Size="Size.Small" Color="@ObterCorStatus(orcamento.StatusOrcamento)" Variant="Variant.Outlined">
+                                        @orcamento.StatusOrcamento
+                                    </MudChip>
+                                </div>
+                                <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                                    Cliente: @orcamento.Cliente.Nome | Validade: @orcamento.Validade.ToString("dd/MM/yyyy")
+                                </MudText>
+                            </div>
+
+                            <MudTooltip Text="Copiar orçamento para novo">
+                                <MudIconButton Icon="@Icons.Material.Filled.ContentCopy"
+                                               Color="Color.Default"
+                                               Size="Size.Small"
+                                               OnClick="@(() => CopiarOrcamento(orcamento.Id))" />
+                            </MudTooltip>
+                        </div>
+                    </MudListItem>
+                }
+            </MudList>
+        }
+    </MudCardContent>
+
+    <MudDivider />
+
+    <MudCardActions Class="justify-end pa-3">
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Primary"
+                   EndIcon="@Icons.Material.Filled.ArrowForward"
+                   OnClick="NavegarParaTodosOrcamentos">
+            Ver Todos
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter] public Guid FornecedorId { get; set; }
+    [Parameter] public ICollection<OrcamentoResponse> Orcamentos { get; set; } = [];
+
+    private void CopiarOrcamento(Guid orcamentoId)
+    {
+        Navigation.NavigateTo($"/orcamentos/novo?copiarDeId={orcamentoId}");
+    }
+
+    private void NavegarParaTodosOrcamentos()
+    {
+        Navigation.NavigateTo($"/orcamentos?fornecedorId={FornecedorId}");
+    }
+
+    private static Color ObterCorStatus(StatusOrcamento status) => status switch
+    {
+        StatusOrcamento.Aprovado => Color.Success,
+        StatusOrcamento.Rejeitado => Color.Error,
+        StatusOrcamento.Cancelado => Color.Dark,
+        _ => Color.Warning
+    };
+}
