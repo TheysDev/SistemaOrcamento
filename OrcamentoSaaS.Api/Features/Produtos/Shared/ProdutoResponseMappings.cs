@@ -7,14 +7,16 @@ public static class ProdutoResponseMappings
     public static ProdutoResponse ToResponse(this Produto produto)
     {
         return new ProdutoResponse(
-            produto.Id, 
+            produto.Id,
             produto.Codigo,
             produto.Descricao,
             produto.Valor,
-            new ProdutoDetalhesDto(
-                produto.Detalhes.Comprimento,
-                produto.Detalhes.Peso,
-                produto.Detalhes.Diametro,
-                produto.Detalhes.Volume));
+            new ProdutoDetalhesDto
+            {
+                Comprimento = produto.Detalhes.Comprimento,
+                Peso = produto.Detalhes.Peso,
+                Diametro = produto.Detalhes.Diametro,
+                Volume = produto.Detalhes.Volume
+            });
     }
 }

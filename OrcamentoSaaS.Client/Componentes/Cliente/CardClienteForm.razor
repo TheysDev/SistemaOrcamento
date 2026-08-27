@@ -1,6 +1,5 @@
 ﻿@using OrcamentoSaaS.Shared.Dtos.Clientes
 
-<MudContainer MaxWidth="MaxWidth.Medium" Class="my-4">
     <MudCard Elevation="3" Class="rounded-lg">
         <MudCardHeader>
             <CardHeaderAvatar>
@@ -134,10 +133,10 @@
             </MudButton>
         </MudCardActions>
     </MudCard>
-</MudContainer>
+
 
 @code {
-    [Parameter, EditorRequired] public ClienteBaseRequest Model { get; set; } = default!;
+    [Parameter, EditorRequired] public ClienteBaseRequest Model { get; set; } = null!;
     
     [Parameter] public bool IsEditMode { get; set; } = false;
     [Parameter] public bool IsLoading { get; set; }

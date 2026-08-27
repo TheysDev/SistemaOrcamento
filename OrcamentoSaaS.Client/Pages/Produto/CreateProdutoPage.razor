@@ -1,0 +1,60 @@
+﻿@page "/produto/novo"
+
+@using OrcamentoSaaS.Client.Componentes.Produto
+@using OrcamentoSaaS.Shared.Dtos.Produtos
+
+@inject ProdutoService ProdutoService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="my-4">
+    
+    <CardProdutoForm Model="_model"
+                     ButtonText="Salvar Produto"
+                     TitleText="Novo Produto"
+                     IsLoading="_isLoading"
+                     ErrorMenssage="@_errorMessage"
+                     OnValidSubmit="SalvarAsync"
+                     OnCancel="@(() => Navigation.NavigateTo("/produto/listar"))"/>
+    
+    <MudContainer/>
+
+    @code {
+        private readonly ProdutoCreateRequest _model = new();
+        private bool _isLoading;
+        private string? _errorMessage;
+
+        private async Task SalvarAsync()
+        {
+            _isLoading = true;
+            _errorMessage = null;
+            
+            try
+            {
+                var result = await ProdutoService.CreateProdutoAsync(_model);
+
+                if (!result.IsSuccess)
+                {
+                    _errorMessage = result.Error;
+                    _isLoading = false;
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                Snackbar.Add("Erro ao Salvar Produto", Severity.Error);
+
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+
+            Snackbar.Add("Produto cadastrado com sucesso!", Severity.Success);
+
+            Navigation.NavigateTo("/produto/novo");
+        }
+
+    }
+
+</MudContainer>

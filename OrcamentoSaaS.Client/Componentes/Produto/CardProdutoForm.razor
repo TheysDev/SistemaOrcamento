@@ -1,0 +1,250 @@
+﻿@using OrcamentoSaaS.Shared.Dtos.Produtos
+
+<MudCard Elevation="3" Class="rounded-lg">
+    <MudCardHeader>
+        <CardHeaderAvatar>
+            <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+                <MudIcon Icon="@(IsEditMode ? Icons.Material.Filled.Edit : Icons.Material.Filled.Inventory2)" />
+            </MudAvatar>
+        </CardHeaderAvatar>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h5" Class="font-weight-bold">@TitleText</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @(IsEditMode ? "Atualize as informações do produto selecionado." : "Preencha os campos abaixo para cadastrar um novo produto.")
+            </MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+
+    <MudDivider />
+
+    <MudCardContent Class="pa-6">
+        @if (!string.IsNullOrEmpty(ErrorMenssage))
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mb-4">
+                @ErrorMenssage
+            </MudAlert>
+        }
+
+        <MudForm @ref="_form" @bind-IsValid="@_isValid">
+            <MudGrid Spacing="3">
+                
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1">
+                        <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Small" /> Dados Gerais
+                    </MudText>
+                </MudItem>
+
+                <MudItem xs="12" md="3">
+                    <MudNumericField @bind-Value="Model.Codigo"
+                                     Label="Código"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     Disabled="@IsEditMode"
+                                     HelperText="@(IsEditMode ? "Não editável" : "")"
+                                     Adornment="Adornment.Start"
+                                     AdornmentIcon="@Icons.Material.Filled.QrCode"
+                                     HideSpinButtons="true"
+                                     For="@(() => Model.Codigo)" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Model.Descricao"
+                                  Label="Descrição do Produto"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Description"
+                                  For="@(() => Model.Descricao)" />
+                </MudItem>
+
+                <MudItem xs="12" md="3">
+                    <MudNumericField @bind-Value="Model.Valor"
+                                     Label="Preço Unitário"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     Format="N2"
+                                     Min="0.01m"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="R$"
+                                     HideSpinButtons="true"
+                                     For="@(() => Model.Valor)" />
+                </MudItem>
+                
+                <MudItem xs="12" Class="mt-2">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1">
+                        <MudIcon Icon="@Icons.Material.Filled.Straighten" Size="Size.Small" /> Medidas
+                    </MudText>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudSelect T="string"
+                               Label="Medidas a Preencher"
+                               MultiSelection="true"
+                               SelectAll="true"
+                               SelectAllText="Selecionar todas as medidas"
+                               SelectedValues="_medidasSelecionadas"
+                               SelectedValuesChanged="OnMedidasChanged!"
+                               Variant="Variant.Outlined"
+                               Margin="Margin.Dense"
+                               AdornmentIcon="@Icons.Material.Filled.Tune"
+                               HelperText="Escolha 1 ou mais medidas para habilitar o preenchimento">
+                        @foreach (var medida in _opcoesMedidas)
+                        {
+                            <MudSelectItem Value="@medida">@medida</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                @if (_medidasSelecionadas.Contains("Comprimento"))
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudNumericField T="decimal?"
+                                         @bind-Value="Model.Detalhes.Comprimento"
+                                         Label="Comprimento"
+                                         Variant="Variant.Outlined"
+                                         Margin="Margin.Dense"
+                                         Format="N2"
+                                         Min="0.01m"
+                                         Adornment="Adornment.End"
+                                         AdornmentText="m"
+                                         HideSpinButtons="true"
+                                         For="@(() => Model.Detalhes.Comprimento)" />
+                    </MudItem>
+                }
+
+                @if (_medidasSelecionadas.Contains("Peso"))
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudNumericField T="decimal?"
+                                         @bind-Value="Model.Detalhes.Peso"
+                                         Label="Peso"
+                                         Variant="Variant.Outlined"
+                                         Margin="Margin.Dense"
+                                         Format="N2"
+                                         Min="0.01m"
+                                         Adornment="Adornment.End"
+                                         AdornmentText="kg"
+                                         HideSpinButtons="true"
+                                         For="@(() => Model.Detalhes.Peso)" />
+                    </MudItem>
+                }
+
+                @if (_medidasSelecionadas.Contains("Diâmetro"))
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudTextField T="string"
+                                      @bind-Value="Model.Detalhes.Diametro"
+                                      Label="Diâmetro"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
+                                      MaxLength="20"
+                                      Adornment="Adornment.End"
+                                      AdornmentText="m A m"
+                                      HideSpinButtons="true"
+                                      For="@(() => Model.Detalhes.Diametro)" />
+                    </MudItem>
+                }
+
+                @if (_medidasSelecionadas.Contains("Volume"))
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudNumericField T="decimal?"
+                                         @bind-Value="Model.Detalhes.Volume"
+                                         Label="Volume"
+                                         Variant="Variant.Outlined"
+                                         Margin="Margin.Dense"
+                                         Format="N3"
+                                         Min="0.001m"
+                                         Adornment="Adornment.End"
+                                         AdornmentText="m³"
+                                         HideSpinButtons="true"
+                                         For="@(() => Model.Detalhes.Volume)" />
+                    </MudItem>
+                }
+
+            </MudGrid>
+        </MudForm>
+    </MudCardContent>
+
+    <MudDivider />
+
+    <MudCardActions Class="pa-4 d-flex justify-space-between align-center">
+        <MudButton Variant="Variant.Text" 
+                   Color="Color.Secondary" 
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   OnClick="OnCancel" 
+                   Disabled="@IsLoading">
+            Voltar
+        </MudButton>
+
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   OnClick="SubmitAsync" 
+                   Disabled="@IsLoading"
+                   StartIcon="@(IsLoading ? null : Icons.Material.Filled.Save)">
+            @if (IsLoading)
+            {
+                <MudProgressCircular Class="ms-n1 me-2" Size="Size.Small" Indeterminate="true" />
+                <span>Salvando...</span>
+            }
+            else
+            {
+                <span>@ButtonText</span>
+            }
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter, EditorRequired] public ProdutoBaseRequest Model { get; set; } = null!;
+    
+    [Parameter] public bool IsEditMode { get; set; } = false;
+    [Parameter] public bool IsLoading { get; set; }
+    
+    [Parameter] public string? ErrorMenssage { get; set; }
+    
+    [Parameter] public string ButtonText { get; set; } = "Salvar";
+    [Parameter] public string TitleText { get; set; } = "Produto";
+
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private MudForm _form = null!;
+    private bool _isValid;
+
+    private readonly string[] _opcoesMedidas = ["Comprimento", "Peso", "Diâmetro", "Volume"];
+    private IReadOnlyCollection<string> _medidasSelecionadas = new HashSet<string>();
+
+    protected override void OnInitialized()
+    {
+        Model.Detalhes ??= new ProdutoDetalhesDto();
+        
+        var selecionadas = new HashSet<string>();
+        if (Model.Detalhes.Comprimento.HasValue) selecionadas.Add("Comprimento");
+        if (Model.Detalhes.Peso.HasValue) selecionadas.Add("Peso");
+        if (!string.IsNullOrWhiteSpace(Model.Detalhes.Diametro)) selecionadas.Add("Diâmetro");
+        if (Model.Detalhes.Volume.HasValue) selecionadas.Add("Volume");
+
+        _medidasSelecionadas = selecionadas;
+    }
+
+    private void OnMedidasChanged(IReadOnlyCollection<string> novasMedidas)
+    {
+        _medidasSelecionadas = novasMedidas;
+        
+        if (!_medidasSelecionadas.Contains("Comprimento")) Model.Detalhes.Comprimento = null;
+        if (!_medidasSelecionadas.Contains("Peso")) Model.Detalhes.Peso = null;
+        if (!_medidasSelecionadas.Contains("Diâmetro")) Model.Detalhes.Diametro = null;
+        if (!_medidasSelecionadas.Contains("Volume")) Model.Detalhes.Volume = null;
+    }
+
+    private async Task SubmitAsync()
+    {
+        await _form.ValidateAsync();
+        if (_form.IsValid)
+        {
+            await OnValidSubmit.InvokeAsync();
+            await _form.ResetAsync();
+        }
+    }
+}

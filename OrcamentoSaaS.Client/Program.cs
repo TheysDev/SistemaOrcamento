@@ -20,6 +20,7 @@ builder.Services.AddHttpClient(
 
 builder.Services.AddScoped<ClienteService>();
 builder.Services.AddScoped<FornecedorService>();
+builder.Services.AddScoped<ProdutoService>();
 
 
 builder.Services.AddMudServices();

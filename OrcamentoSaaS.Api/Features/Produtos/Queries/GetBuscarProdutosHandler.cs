@@ -15,8 +15,11 @@ public class GetBuscarProdutosHandler(AppDbContext db)
         {
             var busca = query.Busca.Trim();
             
+            var isNumero = int.TryParse(busca, out var codigo);
+            
             consulta = consulta.Where(p =>
-                p.Descricao.Contains(busca));
+                p.Descricao.Contains(busca)
+                || (isNumero && p.Codigo == codigo));
         }
 
         var produtos = await consulta
@@ -26,11 +29,13 @@ public class GetBuscarProdutosHandler(AppDbContext db)
                 p.Codigo,
                 p.Descricao,
                 p.Valor,
-                new ProdutoDetalhesDto(
-                    p.Detalhes.Comprimento,
-                    p.Detalhes.Peso,
-                    p.Detalhes.Diametro,
-                    p.Detalhes.Volume)))
+                new ProdutoDetalhesDto
+                {
+                    Comprimento = p.Detalhes.Comprimento,
+                    Peso = p.Detalhes.Peso,
+                    Diametro = p.Detalhes.Diametro,
+                    Volume = p.Detalhes.Volume
+                }))
             .PaginarAsync(query.Pagina, query.TamanhoPagina, ct);
 
         return Result<PaginacaoResponse<ProdutoResponse>>

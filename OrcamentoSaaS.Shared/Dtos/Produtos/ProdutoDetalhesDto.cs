@@ -2,12 +2,18 @@
 
 namespace OrcamentoSaaS.Shared.Dtos.Produtos;
 
-public sealed record ProdutoDetalhesDto(
+public class ProdutoDetalhesDto
+{
     [property:NotDecimalMenorZero(ErrorMessage = "O comprimento não pode ser zero ou menor que zero.")]
-    decimal? Comprimento,
+    public decimal? Comprimento { get; set; }
+    
     [property:NotDecimalMenorZero(ErrorMessage = "O peso não pode ser zero ou menor que zero.")]
-    decimal? Peso,
+    public decimal? Peso { get; set; }
+    
     [property:MaxLength(length: 20)]
-    string? Diametro,
+    public string? Diametro { get; set; }
+    
     [property:NotDecimalMenorZero(ErrorMessage = "O volume não pode ser zero ou menor que zero.")]
-    decimal? Volume);
+    public decimal? Volume { get; set; }
+}
+   

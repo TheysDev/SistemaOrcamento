@@ -77,6 +77,18 @@ public static class ProdutoEndPoint
                 : Results.Ok(result.Value);
         });
         
+        group.MapGet("/{id:guid}", async (
+            Guid id,
+            GetProdutoByIdHandler produtoHandler,
+            CancellationToken ct) =>
+        {
+            var result = await produtoHandler.Handle(id, ct);
+
+            return !result.IsSuccess
+                ? Results.NotFound(result.Error)
+                : Results.Ok(result.Value);
+        });
+        
         return endpoints;
     }
 }

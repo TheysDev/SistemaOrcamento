@@ -1,5 +1,4 @@
-﻿using OrcamentoSaaS.Shared.Dtos.Clientes;
-using OrcamentoSaaS.Shared.Dtos.Fornecedores;
+﻿using OrcamentoSaaS.Shared.Dtos.Fornecedores;
 using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Fornecedores.Queries;

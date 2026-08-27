@@ -5,49 +5,57 @@
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 
-<ClienteForm Model="_model" 
-             ButtonText="Salvar Cliente"
-             TitleText="Novo Cliente"
-             IsLoading="_isLoading"
-             ErrorMenssage="@_errorMessage"
-             OnValidSubmit="SalvarAsync" 
-             OnCancel="@(() => Navigation.NavigateTo("/cliente/listar"))" />
 
-@code {
-    private readonly ClienteCreateRequest _model = new();
-    private bool _isLoading;
-    private string? _errorMessage;
+<MudContainer MaxWidth="MaxWidth.Medium" Class="my-4">
+    
+    <CardClienteForm Model="_model"
+                     ButtonText="Salvar Cliente"
+                     TitleText="Novo Cliente"
+                     IsLoading="_isLoading"
+                     ErrorMenssage="@_errorMessage"
+                     OnValidSubmit="SalvarAsync"
+                     OnCancel="@(() => Navigation.NavigateTo("/cliente/listar"))"/>
+    
+<MudContainer/>
 
-    private async Task SalvarAsync()
-    {
-        _isLoading = true;
-        _errorMessage = null;
-        
-        if(_model.Telefone is not null) 
-            _model.Telefone = new string(_model.Telefone!.Where(char.IsDigit).ToArray());
-        try
+    @code {
+        private readonly ClienteCreateRequest _model = new();
+        private bool _isLoading;
+        private string? _errorMessage;
+
+        private async Task SalvarAsync()
         {
-            var result = await ClienteService.CreateClienteAsync(_model);
+            _isLoading = true;
+            _errorMessage = null;
 
-            if (!result.IsSuccess)
+            if (_model.Telefone is not null)
+                _model.Telefone = new string(_model.Telefone!.Where(char.IsDigit).ToArray());
+            try
             {
-                _errorMessage = result.Error;
-                _isLoading = false;
-                return;
-            }
-        }
-        catch (Exception)
-        {
-            Snackbar.Add("Erro ao Salvar Cliente", Severity.Error);
+                var result = await ClienteService.CreateClienteAsync(_model);
 
+                if (!result.IsSuccess)
+                {
+                    _errorMessage = result.Error;
+                    _isLoading = false;
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                Snackbar.Add("Erro ao Salvar Cliente", Severity.Error);
+
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+
+            Snackbar.Add("Cliente cadastrado com sucesso!", Severity.Success);
+
+            Navigation.NavigateTo("/cliente/novo");
         }
-        finally
-        {
-            _isLoading = false;
-        }
-        
-        Snackbar.Add("Cliente cadastrado com sucesso!", Severity.Success);
-        
-        Navigation.NavigateTo("/cliente/novo");
+
     }
-}
+
+</MudContainer>

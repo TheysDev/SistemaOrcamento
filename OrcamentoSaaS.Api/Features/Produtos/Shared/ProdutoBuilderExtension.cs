@@ -12,6 +12,7 @@ public static class ProdutoBuilderExtension
         builder.Services.AddScoped<DeleteProdutoHandler>();
 
         builder.Services.AddScoped<GetBuscarProdutosHandler>();
+        builder.Services.AddScoped<GetProdutoByIdHandler>();
         
         return builder;
     }

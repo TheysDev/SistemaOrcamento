@@ -1,0 +1,265 @@
+﻿@page "/produto/listar"
+
+@using OrcamentoSaaS.Client.Componentes.Shared
+@using OrcamentoSaaS.Shared.Dtos.Produtos
+
+@inject ProdutoService ProdutoService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+@implements IDisposable
+
+<PageTitle>Produtos</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
+    <MudCard Elevation="3" Class="rounded-lg">
+        <MudTable T="ProdutoResponse"
+                  ServerData="LoadServerData"
+                  Hover="true"
+                  Dense="false"
+                  Elevation="0"
+                  @ref="_table">
+
+            <ToolBarContent>
+                <div class="d-flex align-center gap-3">
+                    <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">
+                        <MudIcon Icon="@Icons.Material.Filled.Inventory2" />
+                    </MudAvatar>
+                    <div>
+                        <MudText Typo="Typo.h6" Class="font-weight-bold">Produtos</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Gerencie seu catálogo de produtos e medidas</MudText>
+                    </div>
+                </div>
+
+                <MudSpacer />
+
+                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                    <MudTextField @bind-Value="_search"
+                                  Placeholder="Buscar por código ou descrição"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Medium"
+                                  Clearable="true"
+                                  Immediate="true"
+                                  OnClearButtonClick="PesquisarAsync"
+                                  OnKeyUp="OnSearchKeyDown"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Style="min-width: 300px;"
+                                  Class="mt-0" />
+                </MudStack>
+            </ToolBarContent>
+
+            <HeaderContent>
+                <MudTh>Código</MudTh>
+                <MudTh>Descrição</MudTh>
+                <MudTh>Preço Unitário</MudTh>
+                <MudTh>Medidas</MudTh>
+                <MudTh Style="text-align: center;">Ações</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Código">
+                    <div class="d-flex align-center gap-2">
+                        <MudAvatar Color="Color.Secondary" Variant="Variant.Outlined" Size="Size.Small">
+                            <MudIcon Icon="@Icons.Material.Filled.QrCode" Size="Size.Small" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.body1" Class="fw-bold">@context.Codigo</MudText>
+                    </div>
+                </MudTd>
+
+                <MudTd DataLabel="Descrição">
+                    <MudText Typo="Typo.body1" Class="fw-bold">
+                        @FormatarDescricaoComDiametro(context.Descricao, context.Detalhes?.Diametro)
+                    </MudText>
+                </MudTd>
+
+                <MudTd DataLabel="Preço Unitário">
+                    <MudText Typo="Typo.body1" Class="fw-bold text-success">
+                        @context.Valor.ToString("C2")
+                    </MudText>
+                </MudTd>
+
+                <MudTd DataLabel="Medidas">
+                    @if (TemOutrasMedidas(context.Detalhes))
+                    {
+                        <div class="d-flex flex-wrap gap-1">
+                            @if (context.Detalhes?.Comprimento.HasValue == true)
+                            {
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Default" Class="ma-0">
+                                    <span class="fw-bold me-1">Comp:</span> @context.Detalhes.Comprimento.Value.ToString("N2") m
+                                </MudChip>
+                            }
+                            @if (context.Detalhes?.Peso.HasValue == true)
+                            {
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Default" Class="ma-0">
+                                    <span class="fw-bold me-1">Peso:</span> @context.Detalhes.Peso.Value.ToString("N2") kg
+                                </MudChip>
+                            }
+                            @if (context.Detalhes?.Volume.HasValue == true)
+                            {
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Default" Class="ma-0">
+                                    <span class="fw-bold me-1">Vol:</span> @context.Detalhes.Volume.Value.ToString("N3") m³
+                                </MudChip>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(context.Detalhes?.Diametro))
+                            {
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Text" Color="Color.Default" Class="ma-0">
+                                    <span class="fw-bold me-1">Diametro:</span> @context.Detalhes.Diametro
+                                </MudChip>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">-</MudText>
+                    }
+                </MudTd>
+
+                <MudTd DataLabel="Ações">
+                    <MudStack Row="true" Spacing="1" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudTooltip Text="Detalhes">
+                            <MudIconButton Href="@($"/produto/detalhes/{context.Id}")"
+                                           Icon="@Icons.Material.Outlined.Visibility"
+                                           Size="Size.Small"
+                                           Color="Color.Info" />
+                        </MudTooltip>
+
+                        <MudTooltip Text="Editar">
+                            <MudIconButton Href="@($"/produto/editar/{context.Id}")"
+                                           Icon="@Icons.Material.Filled.Edit"
+                                           Size="Size.Small"
+                                           Color="Color.Primary" />
+                        </MudTooltip>
+
+                        <MudTooltip Text="Excluir">
+                            <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
+                                           OnClick="@(() => DeleteProdutoAsync(context.Id))"
+                                           Size="Size.Small"
+                                           Color="Color.Error" />
+                        </MudTooltip>
+                    </MudStack>
+                </MudTd>
+            </RowTemplate>
+
+            <NoRecordsContent>
+                <div class="pa-8 text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Secondary" />
+                    <MudText Typo="Typo.body1" Class="mt-2" Color="Color.Secondary">Nenhum produto encontrado.</MudText>
+                </div>
+            </NoRecordsContent>
+
+            <LoadingContent>
+                <div class="pa-8 text-center">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+                    <MudText Typo="Typo.body2" Class="mt-2">Carregando dados...</MudText>
+                </div>
+            </LoadingContent>
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="[10, 15, 25]" 
+                               RowsPerPageString="Linhas por página:" 
+                               InfoFormat="{first_item}-{last_item} de {all_items}" />
+            </PagerContent>
+        </MudTable>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private readonly CancellationTokenSource _cts = new();
+    
+    private MudTable<ProdutoResponse>? _table;
+    private string _search = string.Empty;
+
+    private static string FormatarDescricaoComDiametro(string? descricao, string? diametro)
+    {
+        if (string.IsNullOrWhiteSpace(descricao)) return "-";
+        
+        return string.IsNullOrWhiteSpace(diametro) 
+            ? descricao 
+            : $"{descricao} - {diametro}";
+    }
+
+    private static bool TemOutrasMedidas(ProdutoDetalhesDto? detalhes)
+    {
+        if (detalhes is null) return false;
+        return detalhes.Comprimento.HasValue || detalhes.Peso.HasValue || detalhes.Volume.HasValue;
+    }
+
+    private async Task<TableData<ProdutoResponse>> LoadServerData(TableState state, CancellationToken ct)
+    {
+        var query = new ProdutoQuery(
+            Pagina: state.Page + 1,
+            TamanhoPagina: state.PageSize,
+            Busca: _search);
+
+        try
+        {
+            var response = await ProdutoService.BuscarProdutosAsync(query, ct);
+
+            return new TableData<ProdutoResponse>
+            {
+                Items = response?.Itens ?? [],
+                TotalItems = response?.TotalItens ?? 0
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            return new TableData<ProdutoResponse> { Items = [], TotalItems = 0 };
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao carregar produtos.", Severity.Error);
+            return new TableData<ProdutoResponse> { Items = [], TotalItems = 0 };
+        }
+    }
+
+    private async Task PesquisarAsync()
+    {
+        if (_table is not null)
+            await _table.ReloadServerData();
+    }
+
+    private async Task OnSearchKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key is "Enter" or "NumpadEnter")
+        {
+            await PesquisarAsync();
+        }
+    }
+
+    private async Task DeleteProdutoAsync(Guid id)
+    {
+        var parameters = new DialogParameters<ModalDeleteConfirmar>
+        {
+            { x => x.ContentText, "Tem certeza que deseja deletar este produto? Esta ação não pode ser desfeita." },
+            { x => x.ButtonText, "Deletar" }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<ModalDeleteConfirmar>("Deletar Produto", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var resultado = await ProdutoService.DeleteProdutoAsync(id, _cts.Token);
+
+            if (resultado.IsSuccess)
+            {
+                Snackbar.Add("Produto excluído com sucesso!", Severity.Success);
+                if (_table is not null)
+                    await _table.ReloadServerData();
+            }
+            else
+            {
+                Snackbar.Add(resultado.Error, Severity.Error);
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

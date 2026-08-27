@@ -1,7 +1,9 @@
-﻿@page "/cliente/editar/{Id:guid}"
-@using OrcamentoSaaS.Client.Componentes.Cliente
-@using OrcamentoSaaS.Shared.Dtos.Clientes
-@inject ClienteService ClienteService
+﻿@page "/produto/editar/{Id:guid}"
+
+@using OrcamentoSaaS.Client.Componentes.Produto
+@using OrcamentoSaaS.Shared.Dtos.Produtos
+
+@inject ProdutoService ProdutoService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 
@@ -18,19 +20,22 @@
 }
 else if (_model != null)
 {
-    <CardClienteForm Model="_model"
-                 IsEditMode="true"
-                 ButtonText="Editar Cliente"
-                 TitleText="Editar Cliente"
-                 IsLoading="_isLoading"
-                 OnValidSubmit="AtualizarAsync" 
-                 OnCancel="@(() => Navigation.NavigateTo("/cliente/listar"))" />
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="my-4">
+        
+        <CardProdutoForm Model="_model"
+                         IsEditMode="true"
+                         ButtonText="Editar Produto"
+                         TitleText="Editar Produto"
+                         IsLoading="_isLoading"
+                         OnValidSubmit="AtualizarAsync"
+                         OnCancel="@(() => Navigation.NavigateTo("/produto/listar"))"/>
+    </MudContainer>
 }
 
 @code {
     [Parameter] public Guid Id { get; set; }
 
-    private ClienteEditRequest? _model;
+    private ProdutoEditRequest? _model;
     
     private bool _isCarregando = true;
     private bool _isLoading;
@@ -43,23 +48,21 @@ else if (_model != null)
     {
         try
         {
-            var result = await ClienteService.GetByIdAsync(Id, _cts.Token);
+            var result = await ProdutoService.GetByIdAsync(Id, _cts.Token);
 
             if (result is { IsSuccess: true, Value: not null })
             {
-                _model = new ClienteEditRequest
+                _model = new ProdutoEditRequest
                 {
-                    Nome = result.Value.Nome,
-                    Cidade = result.Value.Cidade,
-                    Uf = result.Value.Uf,
-                    Email = result.Value.Email,
-                    Telefone = result.Value.Telefone,
-                    Documento =  result.Value.Documento
+                    Codigo =  result.Value.Codigo,
+                    Descricao =  result.Value.Descricao,
+                    Valor = result.Value.Valor,
+                    Detalhes =  result.Value.Detalhes
                 };
             }
             else
             {
-                _errorMessage = result.Error ?? "Cliente não encontrado.";
+                _errorMessage = result.Error ?? "Produto não encontrado.";
             }
         }
         catch (OperationCanceledException)
@@ -76,11 +79,8 @@ else if (_model != null)
         {
             _isLoading = true;
             _errorMessage = null;
-        
-            if(_model is { Telefone: not null }) 
-                _model.Telefone = new string(_model.Telefone!.Where(char.IsDigit).ToArray());
-
-            var result = await ClienteService.EditarClienteAsync(Id, _model!);
+            
+            var result = await ProdutoService.EditarProdutoAsync(Id, _model!);
         
             if (!result.IsSuccess)
             {
@@ -89,8 +89,8 @@ else if (_model != null)
                 return;
             }
 
-            Snackbar.Add("Cliente atualizado com sucesso!", Severity.Success);
-            Navigation.NavigateTo("/cliente/listar");
+            Snackbar.Add("Produto atualizado com sucesso!", Severity.Success);
+            Navigation.NavigateTo("/produto/listar");
         }
         catch (Exception ex)
         {
@@ -110,3 +110,5 @@ else if (_model != null)
     }
 
 }
+
+   
