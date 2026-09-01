@@ -6,7 +6,7 @@ using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Clientes.Queries;
 
-public class GetClienteDetalhesHandler(AppDbContext db)
+public class GetBuscarClienteDetalhesHandler(AppDbContext db)
 {
     public async Task<Result<ClienteDetalhesResponse>> Handle(Guid id, CancellationToken ct)
     {

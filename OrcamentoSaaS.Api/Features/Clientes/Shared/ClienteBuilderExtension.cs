@@ -12,7 +12,7 @@ public static class ClienteBuilderExtension
         builder.Services.AddScoped<DeleteClienteHandler>();
 
         builder.Services.AddScoped<GetBuscarClientesHandler>();
-        builder.Services.AddScoped<GetClienteDetalhesHandler>();
+        builder.Services.AddScoped<GetBuscarClienteDetalhesHandler>();
         builder.Services.AddScoped<GetClienteByIdHandler>();
         
         return builder;

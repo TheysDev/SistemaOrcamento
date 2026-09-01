@@ -94,10 +94,10 @@ public static class ClienteEndPoints
         
         group.MapGet("/detalhes/{id:guid}", async (
             Guid id,
-            GetClienteDetalhesHandler clientesHandler,
+            GetBuscarClienteDetalhesHandler buscarClientesHandler,
             CancellationToken ct) =>
         {
-            var result = await clientesHandler.Handle(id, ct);
+            var result = await buscarClientesHandler.Handle(id, ct);
 
             return !result.IsSuccess
                 ? Results.NotFound(result.Error)

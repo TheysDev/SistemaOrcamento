@@ -1,0 +1,94 @@
+﻿@using OrcamentoSaaS.Client.Pages.Orcamento
+@using OrcamentoSaaS.Shared.Dtos.Clientes
+@using OrcamentoSaaS.Shared.Dtos.Fornecedores
+@using OrcamentoSaaS.Shared.Dtos.Orcamentos
+
+@inject ClienteService ClienteService
+@inject FornecedorService FornecedorService
+
+<MudGrid Spacing="3">
+    <MudItem xs="12">
+        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1">
+            <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Small" /> Dados do Orçamento
+        </MudText>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudAutocomplete T="ClienteResumoResponse"
+                         Label="Cliente"
+                         @bind-Value="Model.Cliente"
+                         SearchFunc="SearchClientesAsync"
+                         ToStringFunc="@(c => c?.Nome)"
+                         Variant="Variant.Outlined"
+                         Margin="Margin.Dense"
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         Required="true"
+                         RequiredError="Selecione um cliente." />
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudAutocomplete T="FornecedorResumoResponse"
+                         Label="Fornecedor"
+                         @bind-Value="Model.Fornecedor"
+                         SearchFunc="SearchFornecedoresAsync"
+                         ToStringFunc="@(f => f?.Nome)"
+                         Variant="Variant.Outlined"
+                         Margin="Margin.Dense"
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         Required="true"
+                         RequiredError="Selecione um fornecedor." />
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudDatePicker @bind-Date="Model.Validade"
+                       Label="Validade do Orçamento"
+                       Variant="Variant.Outlined"
+                       Margin="Margin.Dense"
+                       Required="true" />
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudNumericField @bind-Value="Model.NumeroParcelas"
+                         Label="Nº de Parcelas"
+                         Variant="Variant.Outlined"
+                         Margin="Margin.Dense"
+                         Min="1" Max="36"
+                         Required="true" />
+    </MudItem>
+
+    <MudItem xs="12" md="12">
+        <MudTextField @bind-Value="Model.Observacao"
+                      Label="Observações (Opcional)"
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense"
+                      Lines="3"
+                      MaxLength="1000" />
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter, EditorRequired] public CreateOrcamentoPage.OrcamentoFormModel Model { get; set; } = null!;
+    
+    
+    private async Task<IEnumerable<ClienteResumoResponse>> SearchClientesAsync(string value, CancellationToken ct)
+    {
+        var query = new ClienteQuery(value);
+
+        var clientesPaginados = await ClienteService.BuscarClientesAsync(query, ct);
+
+        var clientesResumo = clientesPaginados.Itens.Select(c => new ClienteResumoResponse(c.Id, c.Nome)).ToList();
+        
+        return clientesResumo ?? [];
+    }
+
+    private async Task<IEnumerable<FornecedorResumoResponse>> SearchFornecedoresAsync(string value, CancellationToken ct)
+    {
+        var query = new FornecedorQuery(value);
+        
+        var fornecedoresPaginados = await FornecedorService.BuscarFornecedoresAsync(query, ct);
+        
+        var fornecedoresResumo = fornecedoresPaginados.Itens.Select(f => new FornecedorResumoResponse(f.Id, f.Nome)).ToList();
+
+        return fornecedoresResumo ?? [];
+    }
+}

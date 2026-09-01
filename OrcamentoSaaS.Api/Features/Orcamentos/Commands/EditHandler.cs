@@ -35,7 +35,7 @@ public class EditHandler(AppDbContext db)
         if (fornecedor is null)
             return Result<OrcamentoResponse>.Fail("Fornecedor não encontrado");
         
-        var result = orcamento.EditarDados(cmd.ClienteId, cmd.FornecedorId, cmd.Validade, cmd.NumeroParcelas);
+        var result = orcamento.EditarDados(cmd.ClienteId, cmd.FornecedorId, cmd.Validade, cmd.NumeroParcelas, cmd.Observacao);
         
         if (result.IsFailure)
             return Result<OrcamentoResponse>.Fail(result.Error);

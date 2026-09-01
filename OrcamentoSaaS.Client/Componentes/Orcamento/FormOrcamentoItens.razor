@@ -1,0 +1,116 @@
+﻿@using OrcamentoSaaS.Client.Pages.Orcamento
+@using OrcamentoSaaS.Shared.Dtos.Produtos
+
+@inject ProdutoService ProdutoService
+
+<MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1 mb-4 mt-6">
+    <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small" /> Itens do Orçamento
+</MudText>
+
+<MudTable Items="Model.Itens" Dense="true" Hover="true" Elevation="0" Class="border-solid border-2 mud-border-lines-default rounded-lg">
+    <HeaderContent>
+        <MudTh>Produto</MudTh>
+        <MudTh>Qtd</MudTh>
+        <MudTh>V. Unit (R$)</MudTh>
+        <MudTh>Desc. (R$)</MudTh>
+        <MudTh>Medidas</MudTh>
+        <MudTh>Subtotal (R$)</MudTh>
+        <MudTh Style="width: 50px; text-align: center;">Ação</MudTh>
+    </HeaderContent>
+    
+    <RowTemplate>
+        <MudTd DataLabel="Produto">
+            <MudAutocomplete T="ProdutoResponse"
+                             @bind-Value="context.Produto"
+                             SearchFunc="SearchProdutosAsync"
+                             ToStringFunc="@(p => p == null ? "" : $"{p.Codigo} - {p.Descricao}")"
+                             Placeholder="Buscar nome ou cód."
+                             Variant="Variant.Text"
+                             Margin="Margin.Dense"
+                             Clearable="true"
+                             Required="true"
+                             RequiredError="Produto obrigatório." />
+        </MudTd>
+        
+        <MudTd DataLabel="Qtd">
+            <MudNumericField @bind-Value="context.Quantidade" Min="1" Variant="Variant.Text" Margin="Margin.Dense" />
+        </MudTd>
+        
+        <MudTd DataLabel="V. Unit">
+            <!-- Exibe o valor que veio do produto selecionado -->
+            <MudText Typo="Typo.body2">@(context.Produto?.Valor.ToString("N2") ?? "0,00")</MudText>
+        </MudTd>
+        
+        <MudTd DataLabel="Desc.">
+            <MudNumericField @bind-Value="context.Desconto" Min="0.00m" Format="N2" Variant="Variant.Text" Margin="Margin.Dense" />
+        </MudTd>
+        
+        <MudTd DataLabel="Medidas">
+            <!-- Regra: Exibe Peso se tiver, senão exibe Volume -->
+            @if (context.SubtotalPeso > 0)
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@context.SubtotalPeso.ToString("N2") kg</MudText>
+            }
+            else if (context.SubtotalVolume > 0)
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@context.SubtotalVolume.ToString("N3") m³</MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.caption" Color="Color.Secondary">-</MudText>
+            }
+        </MudTd>
+        
+        <MudTd DataLabel="Subtotal">
+            <MudText Typo="Typo.body2" Class="fw-bold">@context.SubtotalValor.ToString("N2")</MudText>
+        </MudTd>
+        
+        <MudTd DataLabel="Ação" Style="text-align: center;">
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => RemoverItem(context))" />
+        </MudTd>
+    </RowTemplate>
+    
+    <FooterContent>
+        <!-- Linha de rodapé com os totais gerais -->
+        <MudTd colspan="4" Class="text-end">
+            <MudText Typo="Typo.subtitle1" Class="fw-bold">TOTAIS:</MudText>
+        </MudTd>
+        <MudTd>
+            @if (Model.TotalPesoGeral > 0)
+            {
+                <MudText Typo="Typo.subtitle2" Color="Color.Info" Class="fw-bold">@Model.TotalPesoGeral.ToString("N2") kg</MudText>
+            }
+            @if (Model.TotalVolumeGeral > 0)
+            {
+                <MudText Typo="Typo.subtitle2" Color="Color.Info" Class="fw-bold">@Model.TotalVolumeGeral.ToString("N3") m³</MudText>
+            }
+        </MudTd>
+        <MudTd>
+            <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="fw-bold">
+                R$ @Model.TotalValorGeral.ToString("N2")
+            </MudText>
+        </MudTd>
+        <MudTd></MudTd>
+    </FooterContent>
+</MudTable>
+
+<MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Text" Class="mt-2" OnClick="AdicionarItem">
+    Adicionar Novo Item
+</MudButton>
+
+@code {
+    [Parameter, EditorRequired] public CreateOrcamentoPage.OrcamentoFormModel Model { get; set; } = null!;
+
+    private void AdicionarItem() => Model.Itens.Add(new CreateOrcamentoPage.ItemOrcamentoFormModel());
+    
+    private void RemoverItem(CreateOrcamentoPage.ItemOrcamentoFormModel item) => Model.Itens.Remove(item);
+
+    private async Task<IEnumerable<ProdutoResponse>> SearchProdutosAsync(string value, CancellationToken ct)
+    {
+        var query = new ProdutoQuery(value);
+    
+        var produtosPaginados = await ProdutoService.BuscarProdutosAsync(query, ct);
+
+        return produtosPaginados?.Itens ?? [];
+    }
+}

@@ -6,11 +6,24 @@ namespace OrcamentoSaaS.Api.Features.Orcamentos.Queries;
 
 public class GetBuscarOrcamentosHandler(AppDbContext db)
 {
-    public async Task<Result<PaginacaoResponse<OrcamentoResponse>>> Handle(int pagina, int tamanhoPagina, CancellationToken ct)
+    public async Task<Result<PaginacaoResponse<OrcamentoResponse>>> Handle(OrcamentoQuery query, CancellationToken ct)
     {
-        var query = db.Orcamentos
-            .AsNoTracking()
-            .OrderBy(o => o.Codigo)
+        var consulta = db.Orcamentos.AsNoTracking();
+            
+        if (!string.IsNullOrWhiteSpace(query.Busca))
+        {
+            var busca = query.Busca.Trim();
+            
+            var isNumero = int.TryParse(busca, out var codigo);
+            
+            consulta = consulta.Where(o =>
+                o.Fornecedor.Nome.Contains(busca)
+                || o.Cliente.Nome.Contains(busca)
+                || (isNumero && o.Codigo == codigo));
+        }
+        
+        var orcamentosPaginados = await consulta
+            .OrderByDescending(o => o.Codigo)
             .Select(o => new OrcamentoResponse(
                 o.Id,
                 new ClienteResumoResponse(
@@ -21,9 +34,8 @@ public class GetBuscarOrcamentosHandler(AppDbContext db)
                     o.Fornecedor.Nome),
                 o.CodigoFormatado,
                 o.Validade,
-                o.Status));
-
-        var orcamentosPaginados = await query.PaginarAsync(pagina, tamanhoPagina, ct);
+                o.Status)).
+            PaginarAsync(query.Pagina, query.TamanhoPagina, ct);
 
         return Result<PaginacaoResponse<OrcamentoResponse>>.Success(orcamentosPaginados);
     }

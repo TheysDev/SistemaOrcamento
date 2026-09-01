@@ -1,0 +1,161 @@
+﻿@page "/orcamento/novo"
+
+@using OrcamentoSaaS.Client.Componentes.Orcamento
+@using OrcamentoSaaS.Shared.Dtos.Orcamentos
+@using OrcamentoSaaS.Shared.Dtos.Produtos
+
+@inject OrcamentoService OrcamentoService
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
+    <MudCard Elevation="3" Class="rounded-lg">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+                    <MudIcon Icon="@Icons.Material.Filled.RequestQuote" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5" Class="font-weight-bold">Novo Orçamento</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Preencha as informações para gerar uma nova proposta.</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudDivider />
+
+        <MudCardContent Class="pa-6">
+            <MudForm @ref="_form" @bind-IsValid="_isValid">
+                
+                <FormOrcamentoDadosGerais Model="_viewModel" />
+                
+                <FormOrcamentoItens Model="_viewModel" />
+
+            </MudForm>
+        </MudCardContent>
+
+        <MudDivider />
+
+        <MudCardActions Class="pa-4 d-flex justify-space-between align-center">
+            <MudButton Variant="Variant.Text" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ArrowBack" Href="/orcamento/listar">
+                Cancelar
+            </MudButton>
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="SalvarAsync"
+                       Disabled="@_isLoading"
+                       StartIcon="@(_isLoading ? null : Icons.Material.Filled.Save)">
+                @if (_isLoading)
+                {
+                    <MudProgressCircular Class="ms-n1 me-2" Size="Size.Small" Indeterminate="true" />
+                    <span>Salvando...</span>
+                }
+                else
+                {
+                    <span>Gerar Orcamento</span>
+                }
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private MudForm _form = null!;
+    private bool _isValid;
+    private bool _isLoading;
+    private OrcamentoFormModel _viewModel = new();
+
+    protected override void OnInitialized()
+    {
+        _viewModel.Itens.Add(new ItemOrcamentoFormModel());
+    }
+
+    private async Task SalvarAsync()
+    {
+        await _form.Validate();
+
+        if (!_viewModel.Itens.Any())
+        {
+            Snackbar.Add("O Orçamento deve ter ao mesno um item", Severity.Error);
+            return;
+        }
+        
+        if (_viewModel.Itens.Any(i => i.Produto is null))
+        {
+            Snackbar.Add("Todos os itens da lista precisam ter um produto selecionado.", Severity.Warning);
+            return;
+        }
+        
+        _isLoading = true;
+
+        try
+        {
+            var request = new OrcamentoCreateRequest
+            {
+                ClienteId = _viewModel.Cliente!.Id,
+                FornecedorId = _viewModel.Fornecedor!.Id,
+                NumeroParcelas = _viewModel.NumeroParcelas,
+                Validade = DateOnly.FromDateTime(_viewModel.Validade!.Value),
+                Observacao = _viewModel.Observacao,
+                Itens = _viewModel.Itens.Select(i => new ItemOrcamentoRequest(
+                    ProdutoId: i.Produto!.Id,
+                    Quantidade: i.Quantidade,
+                    Desconto: i.Desconto
+                )).ToList()
+            };
+
+            var resultado = await OrcamentoService.CreateOrcamentoAsync(request);
+            
+            if (resultado.IsSuccess)
+            { 
+                Snackbar.Add("Orçamento criado com sucesso!", Severity.Success); 
+                
+                await _form.ResetAsync();
+            }
+            else
+            {
+                Snackbar.Add(resultado.Error ?? "Erro ao salvar orçamento.", Severity.Error);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Operação cancelada pelo usuário ou timeout do token
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Ocorreu um erro inesperado: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    
+    public class OrcamentoFormModel
+    {
+        public ClienteResumoResponse? Cliente { get; set; }
+        public FornecedorResumoResponse? Fornecedor { get; set; }
+        public int NumeroParcelas { get; set; } = 1;
+        public DateTime? Validade { get; set; } = DateTime.Today.AddDays(7);
+        public string? Observacao { get; set; }
+        public List<ItemOrcamentoFormModel> Itens { get; set; } = new();
+        
+        public decimal TotalValorGeral => Itens.Sum(i => i.SubtotalValor);
+        public decimal TotalPesoGeral => Itens.Sum(i => i.SubtotalPeso);
+        public decimal TotalVolumeGeral => Itens.Sum(i => i.SubtotalVolume);
+    }
+
+    public class ItemOrcamentoFormModel
+    {
+        public Guid IdLocal { get; } = Guid.NewGuid();
+        public ProdutoResponse? Produto { get; set; }
+        public int Quantidade { get; set; } = 1;
+        public decimal Desconto { get; set; }
+        
+        public decimal SubtotalValor => Math.Max(0, (Quantidade * (Produto?.Valor ?? 0m)) - Desconto);
+        public decimal SubtotalPeso => Quantidade * (Produto?.Detalhes.Peso ?? 0m);
+        public decimal SubtotalVolume => Quantidade * (Produto?.Detalhes.Volume ?? 0m);
+    }
+    
+}

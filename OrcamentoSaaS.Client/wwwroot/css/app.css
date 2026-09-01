@@ -5,3 +5,64 @@
 .mud-drawer-header {
     border-bottom: none !important;
 }
+
+/* Na tela do sistema: esconde a folha de impressão comercial */
+@media screen {
+    .folha-impressao {
+        display: none !important;
+    }
+}
+
+/* No momento de imprimir / Salvar PDF */
+@media print {
+    /* Esconde a interface normal do MudBlazor e elementos de layout */
+    .tela-detalhes,
+    .mud-appbar,
+    .mud-drawer,
+    .mud-card-actions,
+    .no-print {
+        display: none !important;
+    }
+
+    /* Torna visível apenas a folha comercial */
+    .folha-impressao {
+        display: block !important;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 12mm 15mm;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .tabela-impressao {
+        width: 100%;
+        border-collapse: collapse !important;
+        margin: 12mm 0;
+    }
+
+    .tabela-impressao th {
+        background-color: #f1f3f5 !important;
+        border: 1px solid #dee2e6 !important;
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+        font-weight: bold !important;
+    }
+
+    .tabela-impressao td {
+        border: 1px solid #dee2e6 !important;
+        padding: 6px 8px !important;
+        font-size: 12px !important;
+    }
+
+    .caixa-dados {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: #fafafa !important;
+    }
+}

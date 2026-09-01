@@ -1,8 +1,10 @@
-﻿namespace OrcamentoSaaS.Shared.Dtos.Orcamentos;
+﻿using OrcamentoSaaS.Shared.Dtos.Produtos;
+
+namespace OrcamentoSaaS.Shared.Dtos.Orcamentos;
 
 public record ItemOrcamentoResponse(
     Guid Id,
-    string ProdutoNome,
+    ProdutoResponse Produto,
     int Quantidade,
     decimal Valor,
     decimal Desconto,

@@ -8,8 +8,6 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 var apiUrl = builder.Configuration["ApiUrl"];
 
-
-
 builder.Services.AddHttpClient(
     "Api",
     client =>
@@ -21,6 +19,7 @@ builder.Services.AddHttpClient(
 builder.Services.AddScoped<ClienteService>();
 builder.Services.AddScoped<FornecedorService>();
 builder.Services.AddScoped<ProdutoService>();
+builder.Services.AddScoped<OrcamentoService>();
 
 
 builder.Services.AddMudServices();

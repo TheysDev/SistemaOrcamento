@@ -1,4 +1,5 @@
 ﻿using OrcamentoSaaS.Shared.Dtos.Orcamentos;
+using OrcamentoSaaS.Shared.Dtos.Produtos;
 using OrcamentoSaaS.Shared.Results;
 
 namespace OrcamentoSaaS.Api.Features.Orcamentos.Queries;
@@ -20,17 +21,33 @@ public class GetBuscarOrcamentoDetalhesHandler(AppDbContext db)
                     o.Fornecedor.Nome),
                 o.Itens.Select(i => new ItemOrcamentoResponse(
                     i.Id,
-                    i.Produto.Descricao,
+                    new ProdutoResponse(
+                        i.ProdutoId, 
+                        i.Produto.Codigo,
+                        i.Produto.Descricao,
+                        i.Produto.Valor,
+                        new ProdutoDetalhesDto
+                        {
+                            Comprimento = i.Produto.Detalhes.Comprimento,
+                            Peso =  i.Produto.Detalhes.Peso,
+                            Diametro =  i.Produto.Detalhes.Diametro,
+                            Volume =  i.Produto.Detalhes.Volume
+                        }),
                     i.Quantidade,
                     i.ValorItem,
-                    i.DescontoItem,
-                    i.Total))
+                    i.DescontoItem, 
+                    (i.Quantidade * i.ValorItem) - i.DescontoItem))
                     .ToList(),
                 o.CodigoFormatado,
                 o.Validade,
                 o.NumeroParcelas,
-                o.Valor,
-                o.Desconto,
+                o.Valor > 0 
+                ? o.Valor
+                : o.Itens.Sum(i => (i.Quantidade * i.ValorItem) - i.DescontoItem),
+                o.Desconto > 0
+                ? o.Desconto
+                : o.Itens.Sum(i => i.DescontoItem),
+                o.Observacao,
                 o.Status))
             .FirstOrDefaultAsync(ct);
         

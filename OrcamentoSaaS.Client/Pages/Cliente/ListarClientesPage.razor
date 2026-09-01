@@ -214,14 +214,14 @@
 
     private async Task DeleteClienteAsync(Guid id)
     {
-        var parameters = new DialogParameters<ModalDeleteConfirmar>
+        var parameters = new DialogParameters<ModalConfirmar>
         {
             { x => x.ContentText, "Tem certeza que deseja deletar este cliente? Esta ação não pode ser desfeita." },
             { x => x.ButtonText, "Deletar" }
         };
 
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-        var dialog = await DialogService.ShowAsync<ModalDeleteConfirmar>("Deletar Cliente", parameters, options);
+        var dialog = await DialogService.ShowAsync<ModalConfirmar>("Deletar Cliente", parameters, options);
         var result = await dialog.Result;
 
         if (result is not null && !result.Canceled)

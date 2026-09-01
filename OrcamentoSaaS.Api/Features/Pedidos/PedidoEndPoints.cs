@@ -16,9 +16,9 @@ public static class PedidoEndPoints
             CancellationToken ct) =>
         {
             var command = new ParcelaCommand(
-                req.parcelaId,
+                req.ParcelaId,
                 pedidoId,
-                req.dataPagamento);
+                req.DataPagamento);
             
             var result = await handler.Handle(command, ct);
             

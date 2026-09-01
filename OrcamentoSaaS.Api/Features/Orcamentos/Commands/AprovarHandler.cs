@@ -52,7 +52,7 @@ public class AprovarHandler(AppDbContext db)
         }
         catch (Exception)
         {
-            await transaction.RollbackAsync(ct);
+            Console.WriteLine("Erro ao aprovar");
             throw;
         }
 

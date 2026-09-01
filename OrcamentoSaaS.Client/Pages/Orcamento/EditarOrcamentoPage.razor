@@ -1,0 +1,215 @@
+﻿@page "/orcamento/editar/{Id:guid}"
+
+@using OrcamentoSaaS.Client.Componentes.Orcamento
+@using OrcamentoSaaS.Shared.Dtos.Orcamentos
+
+@inject OrcamentoService OrcamentoService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+@implements IDisposable
+
+<PageTitle>Editar Orçamento</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
+    <MudCard Elevation="3" Class="rounded-lg">
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+                    <MudIcon Icon="@Icons.Material.Filled.Edit" />
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5" Class="font-weight-bold">Editar Orçamento</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Atualize os dados e itens da proposta selecionada.
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudDivider />
+
+        <MudCardContent Class="pa-6">
+            @if (_isLoadingData)
+            {
+                <div class="d-flex flex-column align-center justify-center pa-8">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                    <MudText Typo="Typo.body2" Class="mt-3" Color="Color.Secondary">Carregando dados do orçamento...</MudText>
+                </div>
+            }
+            else
+            {
+                <MudForm @ref="_form" @bind-IsValid="_isValid">
+                    <FormOrcamentoDadosGerais Model="_viewModel" />
+                    <FormOrcamentoItens Model="_viewModel" />
+                </MudForm>
+            }
+        </MudCardContent>
+
+        <MudDivider />
+
+        <MudCardActions Class="pa-4 d-flex justify-space-between align-center">
+            <MudButton Variant="Variant.Text" 
+                       Color="Color.Secondary" 
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       Href="/orcamento/listar" 
+                       Disabled="@_isSaving">
+                Voltar
+            </MudButton>
+
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       OnClick="SalvarAsync" 
+                       Disabled="@(_isLoadingData || _isSaving)"
+                       StartIcon="@(_isSaving ? null : Icons.Material.Filled.Save)">
+                @if (_isSaving)
+                {
+                    <MudProgressCircular Class="ms-n1 me-2" Size="Size.Small" Indeterminate="true" />
+                    <span>Salvando...</span>
+                }
+                else
+                {
+                    <span>Salvar Alterações</span>
+                }
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private readonly CancellationTokenSource _cts = new();
+    private MudForm _form = null!;
+    private bool _isValid;
+    private bool _isLoadingData = true;
+    private bool _isSaving;
+    private string? _errorMessage;
+
+    private CreateOrcamentoPage.OrcamentoFormModel _viewModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarOrcamentoAsync();
+    }
+
+    private async Task CarregarOrcamentoAsync()
+    {
+        _isLoadingData = true;
+        _errorMessage = null;
+
+        try
+        {
+            var result = await OrcamentoService.BuscarOrcamentoByIdAsync(Id, _cts.Token);
+
+            if (result.IsFailure)
+            {
+                Snackbar.Add(result.Error, Severity.Error);
+                NavigationManager.NavigateTo("/orcamento/listar");
+                return;
+            }
+
+            var orcamento = result.Value;
+            
+            _viewModel = new CreateOrcamentoPage.OrcamentoFormModel
+            {
+                Cliente = orcamento.Cliente,
+                Fornecedor = orcamento.Fornecedor,
+                NumeroParcelas = orcamento.NumeroParcelas,
+                Validade = orcamento.Validade.ToDateTime(TimeOnly.MinValue),
+                Observacao = orcamento.Observacao,
+                Itens = orcamento.Itens.Select(i => new CreateOrcamentoPage.ItemOrcamentoFormModel
+                {
+                    Produto = i.Produto,
+                    Quantidade = i.Quantidade,
+                    Desconto = i.Desconto
+                }).ToList()
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            // Requisição cancelada ao sair da tela
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Erro ao carregar dados do orçamento: {ex.Message}";
+            Snackbar.Add("Não foi possível carregar o orçamento.", Severity.Error);
+        }
+        finally
+        {
+            _isLoadingData = false;
+        }
+    }
+
+    private async Task SalvarAsync()
+    {
+        await _form.Validate();
+
+        if (!_isValid)
+            return;
+
+        if (!_viewModel.Itens.Any())
+        {
+            Snackbar.Add("O Orçamento deve ter ao menos um item.", Severity.Error);
+            return;
+        }
+
+        if (_viewModel.Itens.Any(i => i.Produto is null))
+        {
+            Snackbar.Add("Todos os itens da lista precisam ter um produto selecionado.", Severity.Warning);
+            return;
+        }
+
+        _isSaving = true;
+        _errorMessage = null;
+
+        try
+        {
+            var request = new OrcamentoEditRequest
+            {
+                ClienteId = _viewModel.Cliente!.Id,
+                FornecedorId = _viewModel.Fornecedor!.Id,
+                NumeroParcelas = _viewModel.NumeroParcelas,
+                Validade = DateOnly.FromDateTime(_viewModel.Validade!.Value),
+                Observacao = _viewModel.Observacao,
+                Itens = _viewModel.Itens.Select(i => new ItemOrcamentoRequest(
+                    ProdutoId: i.Produto!.Id,
+                    Quantidade: i.Quantidade,
+                    Desconto: i.Desconto
+                )).ToList()
+            };
+
+            var resultado = await OrcamentoService.EditarOrcamentoAsync(Id, request, _cts.Token);
+
+            if (resultado.IsSuccess)
+            {
+                Snackbar.Add("Orçamento atualizado com sucesso!", Severity.Success);
+                NavigationManager.NavigateTo("/orcamento/listar");
+            }
+            else
+            {
+                _errorMessage = resultado.Error ?? "Erro ao atualizar orçamento.";
+                Snackbar.Add(_errorMessage, Severity.Error);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Operação cancelada
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Ocorreu um erro inesperado: {ex.Message}";
+            Snackbar.Add(_errorMessage, Severity.Error);
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

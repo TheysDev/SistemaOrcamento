@@ -84,7 +84,8 @@ public class Orcamento
         Guid clienteId,  
         Guid fornecedorId, 
         DateOnly validade, 
-        int parcelas)
+        int parcelas,
+        string? observacao)
     {
         if(clienteId == Guid.Empty)
             return Result.Fail("O Cliente deve ser informado.");
@@ -101,6 +102,7 @@ public class Orcamento
         FornecedorId = fornecedorId;
         Validade = validade;
         NumeroParcelas = parcelas;
+        Observacao = observacao;
         
         return Result.Success();
     }

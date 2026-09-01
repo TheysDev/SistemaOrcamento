@@ -12,4 +12,5 @@ public record OrcamentoDetalhesResponse(
     int NumeroParcelas,
     decimal ValorTotal,
     decimal DescontoTotal,
+    string? Observacao,
     StatusOrcamento StatusOrcamento);

@@ -1,0 +1,297 @@
+﻿@page "/orcamento/listar"
+
+@using OrcamentoSaaS.Client.Componentes.Shared
+@using OrcamentoSaaS.Shared.Dtos.Orcamentos
+@using OrcamentoSaaS.Shared.Enums
+
+@inject OrcamentoService OrcamentoService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+@implements IDisposable
+
+<PageTitle>Orçamentos</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
+    <MudCard Elevation="3" Class="rounded-lg">
+        <MudTable T="OrcamentoResponse"
+                  ServerData="LoadServerData"
+                  Hover="true"
+                  Dense="false"
+                  Elevation="0"
+                  @ref="_table">
+
+            <ToolBarContent>
+                <div class="d-flex align-center gap-3">
+                    <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">
+                        <MudIcon Icon="@Icons.Material.Filled.RequestQuote" />
+                    </MudAvatar>
+                    <div>
+                        <MudText Typo="Typo.h6" Class="font-weight-bold">Orçamentos</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Gerencie suas propostas comerciais e cotações</MudText>
+                    </div>
+                </div>
+
+                <MudSpacer />
+
+                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                    <MudTextField @bind-Value="_search"
+                                  Placeholder="Buscar por código ou cliente"
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Medium"
+                                  Clearable="true"
+                                  Immediate="true"
+                                  OnClearButtonClick="PesquisarAsync"
+                                  OnKeyUp="OnSearchKeyUp"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Style="min-width: 300px;"
+                                  Class="mt-0" />
+                </MudStack>
+            </ToolBarContent>
+
+            <HeaderContent>
+                <MudTh>Código</MudTh>
+                <MudTh>Cliente</MudTh>
+                <MudTh>Fornecedor</MudTh>
+                <MudTh>Validade</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh Style="text-align: center;">Ações</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Código">
+                    <div class="d-flex align-center gap-2">
+                        <MudAvatar Color="Color.Secondary" Variant="Variant.Outlined" Size="Size.Small">
+                            <MudIcon Icon="@Icons.Material.Filled.Tag" Size="Size.Small" />
+                        </MudAvatar>
+                        <MudText Typo="Typo.body1" Class="fw-bold">@context.Codigo</MudText>
+                    </div>
+                </MudTd>
+
+                <MudTd DataLabel="Cliente">
+                    <div class="d-flex align-center gap-1">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" Color="Color.Secondary" Style="font-size: 0.9rem;" />
+                        <MudText Typo="Typo.body1" Class="fw-bold">@context.Cliente.Nome</MudText>
+                    </div>
+                </MudTd>
+
+                <MudTd DataLabel="Fornecedor">
+                    <div class="d-flex align-center gap-1">
+                        <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" Color="Color.Secondary" Style="font-size: 0.9rem;" />
+                        <MudText Typo="Typo.body2">@context.Fornecedor.Nome</MudText>
+                    </div>
+                </MudTd>
+
+                <MudTd DataLabel="Validade">
+                    <div class="d-flex align-center gap-1">
+                        <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Size="Size.Small" Color="Color.Secondary" Style="font-size: 0.9rem;" />
+                        <MudText Typo="Typo.body2">
+                            @context.Validade.ToString("dd/MM/yyyy")
+                        </MudText>
+                    </div>
+                </MudTd>
+
+                <MudTd DataLabel="Status">
+                    <MudChip T="string"
+                             Color="@ObterCorStatus(context.StatusOrcamento)"
+                             Variant="Variant.Filled"
+                             Size="Size.Small">
+                        @context.StatusOrcamento.ToString()
+                    </MudChip>
+                </MudTd>
+
+                <MudTd DataLabel="Ações">
+                    <MudStack Row="true" Spacing="1" Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudTooltip Text="Detalhes / Visualizar">
+                            <MudIconButton Href="@($"/orcamento/detalhes/{context.Id}")"
+                                           Icon="@Icons.Material.Outlined.Visibility"
+                                           Size="Size.Small"
+                                           Color="Color.Info" />
+                        </MudTooltip>
+
+                        @{
+                            var podeEditar = context.StatusOrcamento == StatusOrcamento.Rascunho;
+                            var tooltipText = podeEditar 
+                                ? "Editar Orçamento" 
+                                : $"Não é possível editar (Status: {context.StatusOrcamento})";
+                        }
+                        
+                        <MudTooltip Text="@tooltipText">
+                            <MudIconButton Href="@(podeEditar ? $"/orcamento/editar/{context.Id}" : null)"
+                                           Icon="@Icons.Material.Filled.Edit"
+                                           Size="Size.Small"
+                                           Disabled="@(!podeEditar)"
+                                           Color="Color.Primary" />
+                        </MudTooltip>
+                        
+                        <MudTooltip Text="Aprovar">
+                            <MudIconButton Icon="@Icons.Material.Rounded.CheckBox"
+                                           OnClick="@(() => AprovarOrcamentoAsync(context.Id))"
+                                           Size="Size.Small"
+                                           Color="Color.Success" />
+                        </MudTooltip>
+                        
+                        @{
+                            var podeDeletar = context.StatusOrcamento == StatusOrcamento.Rascunho;
+                            var tooltipTexto = podeDeletar 
+                                ? "Deletar Orçamento" 
+                                : $"Não é possível deletar (Status: {context.StatusOrcamento})";
+                        }
+
+                        <MudTooltip Text="@tooltipTexto">
+                            <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
+                                           OnClick="@(() => DeleteOrcamentoAsync(context.Id))"
+                                           Size="Size.Small"
+                                           Disabled="@(!podeDeletar)"
+                                           Color="Color.Error" />
+                        </MudTooltip>
+                    </MudStack>
+                </MudTd>
+            </RowTemplate>
+
+            <NoRecordsContent>
+                <div class="pa-8 text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Secondary" />
+                    <MudText Typo="Typo.body1" Class="mt-2" Color="Color.Secondary">Nenhum orçamento encontrado.</MudText>
+                </div>
+            </NoRecordsContent>
+
+            <LoadingContent>
+                <div class="pa-8 text-center">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+                    <MudText Typo="Typo.body2" Class="mt-2">Carregando dados...</MudText>
+                </div>
+            </LoadingContent>
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="[10, 20, 50]" 
+                               RowsPerPageString="Linhas por página:" 
+                               InfoFormat="{first_item}-{last_item} de {all_items}" />
+            </PagerContent>
+        </MudTable>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private readonly CancellationTokenSource _cts = new();
+    
+    private MudTable<OrcamentoResponse>? _table;
+    private string _search = string.Empty;
+
+    private static Color ObterCorStatus(StatusOrcamento status) => status switch
+    {
+        StatusOrcamento.Aprovado => Color.Success,
+        StatusOrcamento.Enviado => Color.Warning,
+        StatusOrcamento.Cancelado or StatusOrcamento.Rejeitado => Color.Error,
+        StatusOrcamento.Rascunho => Color.Default,
+        _ => Color.Info
+    };
+
+    private async Task<TableData<OrcamentoResponse>> LoadServerData(TableState state, CancellationToken ct)
+    {
+        var query = new OrcamentoQuery(
+            Pagina: state.Page + 1,
+            TamanhoPagina: state.PageSize,
+            Busca: _search);
+
+        try
+        {
+            var response = await OrcamentoService.BuscarOrcamentosAsync(query, ct);
+
+            return new TableData<OrcamentoResponse>
+            {
+                Items = response?.Itens ?? [],
+                TotalItems = response?.TotalItens ?? 0
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            return new TableData<OrcamentoResponse> { Items = [], TotalItems = 0 };
+        }
+        catch (Exception)
+        {
+            Snackbar.Add("Erro ao carregar orçamentos.", Severity.Error);
+            return new TableData<OrcamentoResponse> { Items = [], TotalItems = 0 };
+        }
+    }
+
+    private async Task PesquisarAsync()
+    {
+        if (_table is not null)
+            await _table.ReloadServerData();
+    }
+
+    private async Task OnSearchKeyUp(KeyboardEventArgs args)
+    {
+        if (args.Key is "Enter" or "NumpadEnter")
+            await PesquisarAsync();
+    }
+
+    private async Task DeleteOrcamentoAsync(Guid id)
+    {
+        var parameters = new DialogParameters<ModalConfirmar>
+        {
+            { x => x.ContentText, "Tem certeza que deseja deletar este orçamento? Esta ação não pode ser desfeita." },
+            { x => x.ButtonText, "Deletar" }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<ModalConfirmar>("Deletar Orçamento", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var resultado = await OrcamentoService.DeleteOrcamentoAsync(id, _cts.Token);
+
+            if (resultado.IsSuccess)
+            {
+                Snackbar.Add("Orçamento excluído com sucesso!", Severity.Success);
+                if (_table is not null)
+                    await _table.ReloadServerData();
+            }
+            else
+            {
+                Snackbar.Add(resultado.Error, Severity.Error);
+            }
+        }
+    }
+
+    private async Task AprovarOrcamentoAsync(Guid id)
+    {
+        var parameters = new DialogParameters<ModalConfirmar>
+        {
+            { x => x.ContentText, "Tem certeza que deseja aprovar este orçamento? Esta ação não pode ser desfeita." },
+            { x => x.ButtonText, "Aprovar" },
+            { x => x.ButtonColor, Color.Success}
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<ModalConfirmar>("Aprovar Orçamento", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            var resultado = await OrcamentoService.AprovarOrcamentoAsync(id, _cts.Token);
+
+            if (resultado.IsSuccess)
+            {
+                Snackbar.Add("Orçamento aprovado com sucesso!", Severity.Success);
+                if (_table is not null)
+                    await _table.ReloadServerData();
+            }
+            else
+            {
+                Snackbar.Add(resultado.Error, Severity.Error);
+            }
+        }
+    }
+    
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

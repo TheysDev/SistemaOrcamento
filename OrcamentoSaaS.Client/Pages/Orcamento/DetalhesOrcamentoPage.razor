@@ -1,0 +1,465 @@
+﻿@page "/orcamento/detalhes/{Id:guid}"
+
+@using OrcamentoSaaS.Client.Componentes.Shared
+@using OrcamentoSaaS.Shared.Dtos.Orcamentos
+@using OrcamentoSaaS.Shared.Results
+
+@using OrcamentoSaaS.Shared.Enums
+
+@inject OrcamentoService OrcamentoService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+@implements IDisposable
+
+<PageTitle>Detalhes do Orçamento</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-4">
+    <MudCard Elevation="3" Class="rounded-lg">
+        <!-- Cabeçalho -->
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+                    <MudIcon Icon="@Icons.Material.Filled.ReceiptLong"/>
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <div class="d-flex align-center gap-2">
+                    <MudText Typo="Typo.h5" Class="font-weight-bold">
+                        Orçamento @(_orcamento?.Codigo ?? "...")
+                    </MudText>
+                    @if (_orcamento is not null)
+                    {
+                        <MudChip T="string"
+                                 Color="@ObterCorStatus(_orcamento.StatusOrcamento)"
+                                 Variant="Variant.Filled"
+                                 Size="Size.Small">
+                            @_orcamento.StatusOrcamento.ToString()
+                        </MudChip>
+                    }
+                </div>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Consulte as informações completas, composição de itens e condições de pagamento.
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+
+        <MudDivider/>
+
+        <MudCardContent Class="pa-6">
+            @if (_isLoading)
+            {
+                <div class="d-flex flex-column align-center justify-center pa-8">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large"/>
+                    <MudText Typo="Typo.body2" Class="mt-3" Color="Color.Secondary">Carregando dados do orçamento...</MudText>
+                </div>
+            }
+            else if (_orcamento is null)
+            {
+                <MudAlert Severity="Severity.Error" Variant="Variant.Filled">
+                    Orçamento não encontrado.
+                </MudAlert>
+            }
+            else
+            {
+                <MudGrid Spacing="3">
+                    <!-- Bloco 1: Dados Gerais -->
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1">
+                            <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Small"/> Dados Gerais
+                        </MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Cliente</MudText>
+                        <MudText Typo="Typo.body1" Class="fw-bold">@_orcamento.Cliente.Nome</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Fornecedor</MudText>
+                        <MudText Typo="Typo.body1" Class="fw-bold">@_orcamento.Fornecedor.Nome</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Validade</MudText>
+                        <MudText Typo="Typo.body1" Class="fw-bold">@_orcamento.Validade.ToString("dd/MM/yyyy")</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">Condição de Pagamento</MudText>
+                        <MudText Typo="Typo.body1" Class="fw-bold">
+                            @_orcamento.NumeroParcelas @(_orcamento.NumeroParcelas == 1 ? "parcela" : "parcelas")
+                        </MudText>
+                    </MudItem>
+
+                    @if (!string.IsNullOrWhiteSpace(_orcamento.Observacao))
+                    {
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">Observações</MudText>
+                            <MudText Typo="Typo.body2">@_orcamento.Observacao</MudText>
+                        </MudItem>
+                    }
+
+                    <!-- Bloco 2: Itens do Orçamento -->
+                    <MudItem xs="12" Class="mt-2">
+                        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1 mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Size="Size.Small"/> Itens da Proposta
+                        </MudText>
+
+                        <MudTable Items="_orcamento.Itens" Dense="true" Hover="true" Elevation="0" Class="border-solid border-2 mud-border-lines-default rounded-lg">
+                            <HeaderContent>
+                                <MudTh>Produto</MudTh>
+                                <MudTh>Qtd</MudTh>
+                                <MudTh>V. Unit (R$)</MudTh>
+                                <MudTh>Desc. (R$)</MudTh>
+                                <MudTh>Medidas</MudTh>
+                                <MudTh Style="text-align: right;">Subtotal (R$)</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Produto">
+                                    <MudText Typo="Typo.body2" Class="fw-bold">
+                                        @context.Produto.Codigo - @context.Produto.Descricao
+                                    </MudText>
+                                </MudTd>
+                                <MudTd DataLabel="Qtd">@context.Quantidade</MudTd>
+                                <MudTd DataLabel="V. Unit">@context.Valor.ToString("N2")</MudTd>
+                                <MudTd DataLabel="Desc.">@context.Desconto.ToString("N2")</MudTd>
+                                <MudTd DataLabel="Medidas">
+                                    @if (context.Produto.Detalhes?.Peso.HasValue == true)
+                                    {
+                                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                            @((context.Quantidade * context.Produto.Detalhes.Peso.Value).ToString("N2")) kg
+                                        </MudText>
+                                    }
+                                    else if (context.Produto.Detalhes?.Volume.HasValue == true)
+                                    {
+                                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                            @((context.Quantidade * context.Produto.Detalhes.Volume.Value).ToString("N3")) m³
+                                        </MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">-</MudText>
+                                    }
+                                </MudTd>
+                                <MudTd DataLabel="Subtotal" Style="text-align: right;">
+                                    <MudText Typo="Typo.body2" Class="fw-bold">
+                                        @context.Valor.ToString("N2")
+                                    </MudText>
+                                </MudTd>
+                            </RowTemplate>
+                            <FooterContent>
+                                <MudTd colspan="4" Class="text-end">
+                                    <MudText Typo="Typo.subtitle2" Class="fw-bold">TOTAIS:</MudText>
+                                </MudTd>
+                                <MudTd>
+                                    <div class="d-flex flex-column">
+                                        @if (TotalPeso > 0)
+                                        {
+                                            <MudText Typo="Typo.caption" Color="Color.Info" Class="fw-bold">
+                                                Peso Total: @TotalPeso.ToString("N2") kg
+                                            </MudText>
+                                        }
+                                        @if (TotalVolume > 0)
+                                        {
+                                            <MudText Typo="Typo.caption" Color="Color.Info" Class="fw-bold">
+                                                Volume Total: @TotalVolume.ToString("N3") m³
+                                            </MudText>
+                                        }
+                                    </div>
+                                </MudTd>
+                                <MudTd Style="text-align: right;">
+                                    <div class="d-flex flex-column align-end">
+                                        @if (_orcamento.DescontoTotal > 0)
+                                        {
+                                            <MudText Typo="Typo.caption" Color="Color.Error">
+                                                Desc: - @_orcamento.DescontoTotal.ToString("C2")
+                                            </MudText>
+                                        }
+                                        <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="fw-bold">
+                                            @_orcamento.ValorTotal.ToString("C2")
+                                        </MudText>
+                                    </div>
+                                </MudTd>
+                            </FooterContent>
+                        </MudTable>
+                    </MudItem>
+
+                    <!-- Bloco 3: Parcelamento / Pagamento -->
+                    <MudItem xs="12" md="6" Class="mt-2">
+                        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1 mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Payments" Size="Size.Small"/> Divisão das Parcelas
+                        </MudText>
+
+                        <MudSimpleTable Dense="true" Hover="true" Elevation="0" Class="border-solid border-2 mud-border-lines-default rounded-lg">
+                            <thead>
+                            <tr>
+                                <th>Parcela</th>
+                                <th style="text-align: right;">Valor</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var parcela in CalcularParcelas())
+                            {
+                                <tr>
+                                    <td>@parcela.Numero ª Parcela</td>
+                                    <td style="text-align: right;">@parcela.Valor.ToString("C2")</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </MudSimpleTable>
+                    </MudItem>
+
+                    <!-- Bloco 4: Resumo dos Totais e Medidas -->
+                    <MudItem xs="12" md="6" Class="mt-2">
+                        <MudText Typo="Typo.subtitle2" Color="Color.Primary" Class="d-flex align-center gap-1 mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Analytics" Size="Size.Small"/> Resumo Consolidado
+                        </MudText>
+
+                        <MudPaper Elevation="0" Class="pa-4 border-solid border-2 mud-border-lines-default rounded-lg">
+                            <div class="d-flex justify-space-between mb-2">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Total Peso:</MudText>
+                                <MudText Typo="Typo.body2" Class="fw-bold">@(TotalPeso > 0 ? $"{TotalPeso:N2} kg" : "-")</MudText>
+                            </div>
+                            <div class="d-flex justify-space-between mb-2">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Total Volume:</MudText>
+                                <MudText Typo="Typo.body2" Class="fw-bold">@(TotalVolume > 0 ? $"{TotalVolume:N3} m³" : "-")</MudText>
+                            </div>
+                            <div class="d-flex justify-space-between mb-2">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Desconto Aplicado:</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Error" Class="fw-bold">@_orcamento.DescontoTotal.ToString("C2")</MudText>
+                            </div>
+                            <MudDivider Class="my-2"/>
+                            <div class="d-flex justify-space-between">
+                                <MudText Typo="Typo.h6" Class="fw-bold">Valor Final:</MudText>
+                                <MudText Typo="Typo.h6" Color="Color.Success" Class="fw-bold">@_orcamento.ValorTotal.ToString("C2")</MudText>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            }
+        </MudCardContent>
+
+        <MudDivider/>
+
+        <!-- Ações do Orçamento -->
+        <MudCardActions Class="pa-4 d-flex justify-space-between align-center flex-wrap gap-2">
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       Href="/orcamento/listar"
+                       Disabled="@_isProcessing">
+                Voltar
+            </MudButton>
+
+            @if (_orcamento is not null)
+            {
+                <MudStack Row="true" Spacing="2" Class="flex-wrap">
+                    @* Fluxo: Rascunho -> Enviar *@
+                    @if (_orcamento.StatusOrcamento == StatusOrcamento.Rascunho)
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Info"
+                                   StartIcon="@Icons.Material.Filled.Send"
+                                   OnClick="EnviarOrcamentoAsync"
+                                   Disabled="@_isProcessing">
+                            Enviar Orçamento
+                        </MudButton>
+                    }
+
+                    @* Fluxo: Enviado/Pendente -> Aprovar ou Rejeitar *@
+                    @if (_orcamento.StatusOrcamento == StatusOrcamento.Enviado)
+                    {
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Error"
+                                   StartIcon="@Icons.Material.Filled.ThumbDown"
+                                   OnClick="RejeitarOrcamentoAsync"
+                                   Disabled="@_isProcessing">
+                            Rejeitar
+                        </MudButton>
+
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Success"
+                                   StartIcon="@Icons.Material.Filled.ThumbUp"
+                                   OnClick="AprovarOrcamentoAsync"
+                                   Disabled="@_isProcessing">
+                            Aprovar
+                        </MudButton>
+                        
+                    }
+
+                    @* Cancelar permitido em estados não terminais *@
+                    @if (_orcamento.StatusOrcamento is StatusOrcamento.Rascunho)
+                    {
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Error"
+                                   StartIcon="@Icons.Material.Filled.Cancel"
+                                   OnClick="CancelarOrcamentoAsync"
+                                   Disabled="@_isProcessing">
+                            Cancelar Proposta
+                        </MudButton>
+                    }
+                </MudStack>
+            }
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+  
+    
+
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private readonly CancellationTokenSource _cts = new();
+    private OrcamentoDetalhesResponse? _orcamento;
+    private bool _isLoading = true;
+    private bool _isProcessing;
+
+    private decimal TotalPeso => _orcamento?.Itens.Sum(i => i.Quantidade * (i.Produto.Detalhes?.Peso ?? 0m)) ?? 0;
+
+    private decimal TotalVolume => _orcamento?.Itens.Sum(i => i.Quantidade * (i.Produto.Detalhes?.Volume ?? 0m)) ?? 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarDetalhesAsync();
+    }
+
+    private async Task CarregarDetalhesAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            var result = await OrcamentoService.BuscarOrcamentoByIdAsync(Id, _cts.Token);
+
+            _orcamento = result.Value;
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Erro ao carregar detalhes: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private IEnumerable<(int Numero, decimal Valor)> CalcularParcelas()
+    {
+        if (_orcamento is null || _orcamento.NumeroParcelas <= 0)
+            yield break;
+
+        var valorBase = Math.Round(_orcamento.ValorTotal / _orcamento.NumeroParcelas, 2);
+        var diferencaCentavos = _orcamento.ValorTotal - (valorBase * _orcamento.NumeroParcelas);
+
+        for (var i = 1; i <= _orcamento.NumeroParcelas; i++)
+        {
+            var valorParcela = (i == 1) ? valorBase + diferencaCentavos : valorBase;
+            yield return (i, valorParcela);
+        }
+    }
+
+    private static Color ObterCorStatus(StatusOrcamento status) => status switch
+    {
+        StatusOrcamento.Aprovado => Color.Success,
+        StatusOrcamento.Enviado => Color.Warning,
+        StatusOrcamento.Cancelado or StatusOrcamento.Rejeitado => Color.Error,
+        StatusOrcamento.Rascunho => Color.Default,
+        _ => Color.Info
+    };
+
+    private async Task EnviarOrcamentoAsync()
+    {
+        await ExecutarAcaoModalAsync(
+            titulo: "Enviar Orçamento",
+            texto: "Deseja marcar este orçamento como enviado para o cliente?",
+            botao: "Enviar",
+            cor: Color.Info,
+            acao: () => OrcamentoService.EnviarOrcamentoAsync(Id, _cts.Token)
+        );
+    }
+
+    private async Task AprovarOrcamentoAsync()
+    {
+        await ExecutarAcaoModalAsync(
+            titulo: "Aprovar Orçamento",
+            texto: "Confirma a aprovação deste orçamento?",
+            botao: "Aprovar",
+            cor: Color.Success,
+            acao: () => OrcamentoService.AprovarOrcamentoAsync(Id, _cts.Token)
+        );
+    }
+
+    private async Task RejeitarOrcamentoAsync()
+    {
+        await ExecutarAcaoModalAsync(
+            titulo: "Rejeitar Orçamento",
+            texto: "Tem certeza de que deseja rejeitar este orçamento?",
+            botao: "Rejeitar",
+            cor: Color.Error,
+            acao: () => OrcamentoService.RejeitarOrcamentoAsync(Id, _cts.Token)
+        );
+    }
+
+    private async Task CancelarOrcamentoAsync()
+    {
+        await ExecutarAcaoModalAsync(
+            titulo: "Cancelar Orçamento",
+            texto: "Deseja cancelar esta proposta comercial? Esta ação não pode ser desfeita.",
+            botao: "Cancelar Proposta",
+            cor: Color.Error,
+            acao: () => OrcamentoService.CancelarOrcamentoAsync(Id, _cts.Token)
+        );
+    }
+
+    private async Task ExecutarAcaoModalAsync(string titulo, string texto, string botao, Color cor, Func<Task<Result>> acao)
+    {
+        var parameters = new DialogParameters<ModalConfirmar>
+        {
+            { x => x.ContentText, texto },
+            { x => x.ButtonText, botao },
+            { x => x.ButtonColor, cor }
+        };
+
+        var dialog = await DialogService.ShowAsync<ModalConfirmar>(titulo, parameters);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            _isProcessing = true;
+            try
+            {
+                var operacao = await acao();
+                if (operacao.IsSuccess)
+                {
+                    Snackbar.Add("Status atualizado com sucesso!", Severity.Success);
+                    await CarregarDetalhesAsync();
+                }
+                else
+                {
+                    Snackbar.Add(operacao.Error ?? "Falha ao atualizar status.", Severity.Error);
+                }
+            }
+            finally
+            {
+                _isProcessing = false;
+            }
+        }
+    }
+    
+    private async Task ImprimirOuSalvarPdfAsync()
+    {
+        // Chama a janela nativa de impressão/salvar como PDF do navegador
+        await JS.InvokeVoidAsync("window.print");
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}
