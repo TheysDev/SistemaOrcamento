@@ -1,6 +1,4 @@
-﻿using OrcamentoSaaS.Api.Domain.Interfaces;
-
-namespace OrcamentoSaaS.Api.Domain.Entities;
+﻿namespace OrcamentoSaaS.Api.Domain.Entities;
 
 public class TenantProvider(IHttpContextAccessor httpContextAccessor) : ITenantProvider
 {
@@ -13,7 +11,7 @@ public class TenantProvider(IHttpContextAccessor httpContextAccessor) : ITenantP
 
             if (tenantClaim == null || !Guid.TryParse(tenantClaim.Value, out var tenantId))
             {
-                return Guid.Parse("00000000-0000-0000-0000-000000000001");
+                return Guid.Parse("00000000-0000-0000-0000-000000111111");
                 //throw new UnauthorizedAccessException("Usuário não pertence a nenhum tenant");
             }
             return tenantId;

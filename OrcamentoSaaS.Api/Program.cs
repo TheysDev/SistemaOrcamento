@@ -37,7 +37,6 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ITenantProvider, TenantProvider>();
 
-//DI Create
 builder.AddCliente().AddFornecedor().AddProduto().AddOrcamento().AddPedido();
 
 var app = builder.Build();
@@ -49,13 +48,12 @@ app.UseHttpsRedirection();
 app.UseAuthentication();   
 app.UseAuthorization();  
 
-app.MapIdentityApi<AppUser>();
-
 //EndPoints
 var api = app.MapGroup("/api");
 
 api.MapCliente().MapFornecedor().MapOrcamento().MapProduto().MapPedido();
 
+api.MapIdentityApi<AppUser>();
 
 var culture = new CultureInfo("pt-BR");
 

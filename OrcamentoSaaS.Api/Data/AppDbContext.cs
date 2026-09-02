@@ -22,23 +22,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ITenantProvide
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         
-        modelBuilder.Entity<Cliente>().HasQueryFilter("SoftDelete", c => c.IsActive)
-            .HasQueryFilter("TenantFilter", c => c.TenantId == tenantProvider.TenantId);
+        modelBuilder.Entity<Cliente>().HasQueryFilter("SoftDelete", c => c.IsActive);
+
+        modelBuilder.Entity<Produto>().HasQueryFilter("SoftDelete", c => c.IsActive);
+
+        modelBuilder.Entity<Fornecedor>().HasQueryFilter("SoftDelete", c => c.IsActive);
+
+        modelBuilder.Entity<Orcamento>().HasQueryFilter("SoftDelete", c => c.IsActive);
         
-        modelBuilder.Entity<Produto>().HasQueryFilter("SoftDelete", c => c.IsActive)
-            .HasQueryFilter("TenantFilter", c => c.TenantId == tenantProvider.TenantId);
-        
-        modelBuilder.Entity<Fornecedor>().HasQueryFilter("SoftDelete", c => c.IsActive)
-            .HasQueryFilter("TenantFilter", c => c.TenantId == tenantProvider.TenantId);
-        
-        modelBuilder.Entity<Orcamento>().HasQueryFilter("SoftDelete", c => c.IsActive)
-            .HasQueryFilter("TenantFilter", c => c.TenantId == tenantProvider.TenantId);
-        
-        modelBuilder.Entity<ItemOrcamento>().HasQueryFilter("SoftDelete", c => c.IsActive)
-            .HasQueryFilter("TenantFilter", c => c.TenantId == tenantProvider.TenantId);
-        
-        modelBuilder.Entity<Pedido>().HasQueryFilter("SoftDelete", c => c.IsActive)
-            .HasQueryFilter("TenantFilter", c => c.TenantId == tenantProvider.TenantId);
+        modelBuilder.Entity<ItemOrcamento>().HasQueryFilter("SoftDelete", c => c.IsActive);
+
+        modelBuilder.Entity<Pedido>().HasQueryFilter("SoftDelete", c => c.IsActive);
         
         modelBuilder.Entity<Parcela>().HasQueryFilter("TenantFilter", c => 
             c.TenantId == tenantProvider.TenantId);
