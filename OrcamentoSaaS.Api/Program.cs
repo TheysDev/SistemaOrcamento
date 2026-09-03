@@ -24,7 +24,7 @@ builder.Services.AddCors(opt => opt.AddPolicy("CorsPolicy",
         .WithOrigins(
             "https://localhost:7132", 
             "https://localhost:7247",
-            "https://sistemaorcamento.pages.dev/")
+            "https://sistemaorcamento.pages.dev")
         .SetIsOriginAllowedToAllowWildcardSubdomains()
         .AllowAnyMethod()
         .AllowAnyHeader()
