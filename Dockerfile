@@ -7,7 +7,7 @@ COPY ["OrcamentoSaaS.Api/OrcamentoSaaS.Api.csproj", "OrcamentoSaaS.Api/"]
 COPY ["OrcamentoSaaS.Shared/OrcamentoSaaS.Shared.csproj", "OrcamentoSaaS.Shared/"]
 RUN dotnet restore "OrcamentoSaaS.Api/OrcamentoSaaS.Api.csproj"
 
-# Copia todo o restante dos fontes e compila
+# Copia toda o restante dos fontes e compila
 COPY . .
 WORKDIR "/src/OrcamentoSaaS.Api"
 RUN dotnet publish "OrcamentoSaaS.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
