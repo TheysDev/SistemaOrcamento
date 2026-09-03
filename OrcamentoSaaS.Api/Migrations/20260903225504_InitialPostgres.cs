@@ -249,7 +249,7 @@ namespace OrcamentoSaaS.Api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tb_Orcamento", x => x.Id);
-                    table.CheckConstraint("CK_Orcamento_NumeroParcelas", "[NumeroParcelas] BETWEEN 1 AND 36");
+                    table.CheckConstraint("CK_Orcamento_NumeroParcelas", "\"NumeroParcelas\" BETWEEN 1 AND 36");
                     table.ForeignKey(
                         name: "FK_tb_Orcamento_tb_Cliente_ClienteId",
                         column: x => x.ClienteId,

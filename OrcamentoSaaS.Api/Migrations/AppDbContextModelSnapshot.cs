@@ -446,7 +446,7 @@ namespace OrcamentoSaaS.Api.Migrations
 
                     b.ToTable("tb_Orcamento", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Orcamento_NumeroParcelas", "[NumeroParcelas] BETWEEN 1 AND 36");
+                            t.HasCheckConstraint("CK_Orcamento_NumeroParcelas", "\"NumeroParcelas\" BETWEEN 1 AND 36");
                         });
                 });
 

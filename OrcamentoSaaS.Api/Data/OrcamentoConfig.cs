@@ -10,7 +10,7 @@ public class OrcamentoConfig : IEntityTypeConfiguration<Orcamento>
             {
                 t.HasCheckConstraint(
                     "CK_Orcamento_NumeroParcelas",
-                    "[NumeroParcelas] BETWEEN 1 AND 36");
+                    "\"NumeroParcelas\" BETWEEN 1 AND 36");
             });
         
         builder.HasKey(o => o.Id);
