@@ -53,7 +53,6 @@ public class CreateHandler(AppDbContext db)
         try
         {
             var controle = await db.ControleDeCodigos
-                .FromSqlInterpolated($"SELECT * FROM tb_ControleCodigos WITH (UPDLOCK) WHERE TenanteId = {cmd.TenantId}")
                 .FirstOrDefaultAsync(ct);
             
             if (controle is null)

@@ -21,7 +21,6 @@ public class AprovarHandler(AppDbContext db)
         try
         {
             var controle = await db.ControleDeCodigos
-                .FromSqlInterpolated($"SELECT * FROM tb_ControleCodigos WITH (UPDLOCK) WHERE TenanteId = {tenantId}")
                 .FirstOrDefaultAsync(ct);
 
             if (controle is null)

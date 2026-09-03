@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace OrcamentoSaaS.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class PrimeiraMigracao : Migration
+    public partial class InitialPostgres : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,10 +16,10 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -29,24 +30,24 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Nome = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -57,15 +58,15 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "tb_Cliente",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Cidade = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Uf = table.Column<string>(type: "nvarchar(2)", maxLength: 2, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Telefone = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true),
-                    Documento = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Nome = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Cidade = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Uf = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
+                    Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Telefone = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: true),
+                    Documento = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,20 +74,34 @@ namespace OrcamentoSaaS.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tb_ControleCodigos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenanteId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CodigoOrcamento = table.Column<int>(type: "integer", nullable: true),
+                    CodigoPedido = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tb_ControleCodigos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tb_Fornecedor",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nome = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Cidade = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Uf = table.Column<string>(type: "nvarchar(2)", maxLength: 2, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Telefone = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
-                    Documento = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
-                    PorcentagemAVista = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    PorcentagemAPrazo = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Nome = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    Cidade = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Uf = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
+                    Email = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Telefone = table.Column<string>(type: "character varying(12)", maxLength: 12, nullable: false),
+                    Documento = table.Column<string>(type: "character varying(14)", maxLength: 14, nullable: false),
+                    PorcentagemAVista = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    PorcentagemAPrazo = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -97,13 +112,13 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "tb_Produtos",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Codigo = table.Column<int>(type: "int", nullable: false),
-                    Descricao = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Valor = table.Column<decimal>(type: "decimal(12,2)", precision: 12, scale: 2, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Detalhes = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Codigo = table.Column<int>(type: "integer", nullable: false),
+                    Descricao = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    Valor = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Detalhes = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,11 +129,11 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoleId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -135,11 +150,11 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -156,10 +171,10 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -176,8 +191,8 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -200,10 +215,10 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -220,15 +235,16 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "tb_Orcamento",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ClienteId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FornecedorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Codigo = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClienteId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FornecedorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Codigo = table.Column<int>(type: "integer", nullable: false),
                     Validade = table.Column<DateOnly>(type: "date", nullable: false),
-                    NumeroParcelas = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    NumeroParcelas = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    Observacao = table.Column<string>(type: "text", nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -252,14 +268,14 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "tb_ItemOrcamento",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrcamentoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProdutoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantidade = table.Column<int>(type: "int", nullable: false),
-                    Valor = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Desconto = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrcamentoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProdutoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Quantidade = table.Column<int>(type: "integer", nullable: false),
+                    ValorItem = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    DescontoItem = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -282,14 +298,14 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "tb_Pedidos",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
                     Data = table.Column<DateOnly>(type: "date", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Codigo = table.Column<int>(type: "int", nullable: false),
-                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    OrcamentoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Codigo = table.Column<int>(type: "integer", nullable: false),
+                    ValorTotal = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    OrcamentoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -306,11 +322,11 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "tb_Parcelas",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Numero = table.Column<int>(type: "int", nullable: false),
-                    Valor = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    PedidoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Numero = table.Column<int>(type: "integer", nullable: false),
+                    Valor = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    PedidoId = table.Column<Guid>(type: "uuid", nullable: false),
                     DataPagamento = table.Column<DateOnly>(type: "date", nullable: true),
                     Vencimento = table.Column<DateOnly>(type: "date", nullable: false)
                 },
@@ -334,8 +350,7 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -361,13 +376,18 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_tb_Cliente_TenantId_Documento",
                 table: "tb_Cliente",
                 columns: new[] { "TenantId", "Documento" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tb_ControleCodigos_TenanteId",
+                table: "tb_ControleCodigos",
+                column: "TenanteId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -385,6 +405,13 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "IX_tb_ItemOrcamento_ProdutoId",
                 table: "tb_ItemOrcamento",
                 column: "ProdutoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orcamento_Tenant_Cliente_Codigo",
+                table: "tb_Orcamento",
+                columns: new[] { "TenantId", "ClienteId", "IsActive", "Codigo" },
+                descending: new[] { false, false, false, true })
+                .Annotation("Npgsql:IndexInclude", new[] { "Status", "Validade", "FornecedorId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_tb_Orcamento_ClienteId",
@@ -406,6 +433,13 @@ namespace OrcamentoSaaS.Api.Migrations
                 name: "IX_tb_Parcelas_PedidoId",
                 table: "tb_Parcelas",
                 column: "PedidoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pedidos_Tenant_Orcamento_Codigo",
+                table: "tb_Pedidos",
+                columns: new[] { "TenantId", "OrcamentoId", "IsActive", "Codigo" },
+                descending: new[] { false, false, false, true })
+                .Annotation("Npgsql:IndexInclude", new[] { "Data", "Status", "ValorTotal" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_tb_Pedidos_OrcamentoId",
@@ -443,6 +477,9 @@ namespace OrcamentoSaaS.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "tb_ControleCodigos");
 
             migrationBuilder.DropTable(
                 name: "tb_ItemOrcamento");

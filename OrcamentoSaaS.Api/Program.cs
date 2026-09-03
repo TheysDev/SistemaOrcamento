@@ -17,11 +17,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
                        throw new InvalidOperationException("Connection string" + "'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<AppDbContext>(options => 
-    options.UseSqlServer(connectionString));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddCors(opt => opt.AddPolicy("CorsPolicy",
     policy => policy
-        .WithOrigins("https://localhost:7132", "https://localhost:7247")
+        .WithOrigins(
+            "https://localhost:7132", 
+            "https://localhost:7247",
+            "https://sistemaorcamento.pages.dev/")
+        .SetIsOriginAllowedToAllowWildcardSubdomains()
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()));
