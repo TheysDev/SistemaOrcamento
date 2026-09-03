@@ -1,5 +1,5 @@
 ﻿<MudNavMenu>
-    <MudNavLink Href="/" Icon="@Icons.Material.Rounded.SpaceDashboard" IconColor="Color.Inherit" >Dashboard</MudNavLink>
+    <MudNavLink Href="/home" Icon="@Icons.Material.Rounded.SpaceDashboard" IconColor="Color.Inherit" >Dashboard</MudNavLink>
     <MudNavGroup Title="Orçamento" Icon="@Icons.Material.Filled.BarChart">
         <MudNavLink Href="/orcamento/novo" Icon="@Icons.Material.Filled.AddCircle" IconColor="Color.Inherit">Cadastrar</MudNavLink>
         <MudNavLink Href="/orcamento/listar" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
@@ -16,8 +16,8 @@
         <MudNavLink Href="/produto/novo" Icon="@Icons.Material.Filled.AddCircle" IconColor="Color.Inherit">Cadastrar</MudNavLink>
         <MudNavLink Href="/produto/listar" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Pedido" Icon="@Icons.Material.Rounded.ShoppingCart">
-        <MudNavLink Href="/pedido/listar" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
+    <MudNavGroup Title="Pedido" Disabled="true" Icon="@Icons.Material.Rounded.ShoppingCart">
+        <MudNavLink Href="/pedido/listar" Disabled="true" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit">Listar</MudNavLink>
     </MudNavGroup>
 </MudNavMenu>
 
