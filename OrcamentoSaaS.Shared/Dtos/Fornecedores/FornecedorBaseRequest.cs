@@ -21,7 +21,7 @@ public record FornecedorBaseRequest
     public string? Telefone { get; set; } = string.Empty;
     
     [Required(ErrorMessage = "O CPF/CNPJ é obrigatório.")]
-    [StringLength(14, MinimumLength = 11)]
+    [StringLength(18, MinimumLength = 11, ErrorMessage = "Deve ter no maximo 14 caracteres.")]
     public string Documento { get; set; } = string.Empty;
     
     [Required(ErrorMessage = "A porcentagem é obrigatório.")]

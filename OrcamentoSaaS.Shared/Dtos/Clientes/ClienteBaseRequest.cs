@@ -21,5 +21,6 @@ public record ClienteBaseRequest
     public string? Telefone { get; set; } = "";
     
     [Required(ErrorMessage = "O CPF/CNPJ é obrigatório.")]
+    [StringLength(18, MinimumLength = 11, ErrorMessage = "Deve ter no maximo 14 caracteres.")]
     public string Documento { get; set; } = "";
 }

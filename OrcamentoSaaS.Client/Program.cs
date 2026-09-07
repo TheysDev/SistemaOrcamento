@@ -6,7 +6,8 @@ using OrcamentoSaaS.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-var apiUrl = builder.Configuration["ApiUrl"];
+var apiUrl = builder.Configuration["ApiUrl"]
+    ?? builder.HostEnvironment.BaseAddress;
 
 builder.Services.AddHttpClient(
     "Api",

@@ -1,4 +1,5 @@
 ﻿@page "/cliente/novo"
+@using System.Text.RegularExpressions
 @using OrcamentoSaaS.Client.Componentes.Cliente
 @using OrcamentoSaaS.Shared.Dtos.Clientes
 @inject ClienteService ClienteService
@@ -30,6 +31,11 @@
 
             if (_model.Telefone is not null)
                 _model.Telefone = new string(_model.Telefone!.Where(char.IsDigit).ToArray());
+            
+            if (!string.IsNullOrWhiteSpace(_model.Documento))
+            {
+                _model.Documento = Regex.Replace(_model.Documento, @"[^\d]", "");
+            }
             try
             {
                 var result = await ClienteService.CreateClienteAsync(_model);
